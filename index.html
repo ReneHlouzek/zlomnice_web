@@ -1,17 +1,118 @@
 <!doctype html>
 <html lang="cs">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Zlomnice – nový web se připravuje.">
-<title>Zlomnice</title>
-<style>
-:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17202a;background:#f5f6f8}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px}
-main{width:min(900px,100%);padding:72px 32px;text-align:center;background:#fff;border-radius:28px;box-shadow:0 20px 60px #00000012}
-.mark{display:grid;place-items:center;margin:auto;width:78px;height:78px;border-radius:22px;background:#17202a;color:#fff;font-size:34px;font-weight:800}
-h1{font-size:clamp(52px,11vw,100px);line-height:.9;margin:28px 0 20px;letter-spacing:-.07em}p{font-size:clamp(18px,3vw,25px);color:#59636e;line-height:1.5;max-width:680px;margin:auto}.status{display:inline-block;margin-top:34px;padding:9px 16px;border:1px solid #e1e5e9;border-radius:999px;color:#59636e;font-size:14px}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Zlomnice – moderní web politického uskupení.">
+  <meta name="theme-color" content="#101318">
+  <title>Zlomnice</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body><main><div class="mark">Z</div><h1>ZLOMNICE</h1><p>Nový web právě vzniká. Tohle je první testovací verze projektu.</p><div class="status">GitHub Pages ✓</div></main></body>
+<body>
+  <header class="site-header" id="top">
+    <a class="brand" href="#top" aria-label="Zlomnice – začátek stránky">Z<span>:</span>LOMNICE</a>
+    <nav class="desktop-nav" aria-label="Hlavní navigace">
+      <a href="#o-nas">Kdo jsme</a>
+      <a href="#tym">Tým</a>
+      <a href="#program">Program</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <button class="menu-toggle" aria-label="Otevřít menu" aria-expanded="false">Menu</button>
+  </header>
+
+  <main>
+    <section class="hero section-dark" aria-labelledby="hero-title">
+      <div class="hero-grid"></div>
+      <div class="hero-content reveal">
+        <p class="eyebrow">Lomnice nad Popelkou</p>
+        <h1 id="hero-title">Město,<br><em>které má směr.</em></h1>
+        <p class="hero-lead">Zlomnice je tým lidí, kteří chtějí o městě mluvit otevřeně, rozhodovat s rozumem a dotahovat věci do konce.</p>
+        <a class="scroll-cue" href="#o-nas"><span></span>Pokračovat</a>
+      </div>
+      <div class="hero-number" aria-hidden="true">01</div>
+    </section>
+
+    <section class="intro section-light" id="o-nas">
+      <div class="section-number">02</div>
+      <div class="split reveal">
+        <div>
+          <p class="eyebrow">Kdo jsme</p>
+          <h2>Nechceme jen<br><strong>mluvit o změně.</strong></h2>
+        </div>
+        <div class="copy">
+          <p class="large">Chceme hledat konkrétní řešení, vysvětlovat naše rozhodnutí a měřit, jestli skutečně fungují.</p>
+          <p>Tahle část webu bude po dodání podkladů obsahovat skutečné představení Zlomnice, její hodnoty, důvody vzniku a hlavní témata.</p>
+        </div>
+      </div>
+      <div class="statement reveal">Méně frází.<br><span>Více výsledků.</span></div>
+    </section>
+
+    <section class="team section-dark" id="tym">
+      <div class="section-number">03</div>
+      <div class="section-heading reveal">
+        <p class="eyebrow">Lidé</p>
+        <h2>Za Zlomnicí<br><em>jsou lidé.</em></h2>
+      </div>
+      <div class="candidate-placeholder reveal">
+        <div class="candidate-index">01</div>
+        <div class="candidate-card">
+          <div class="portrait-placeholder">FOTOGRAFIE</div>
+          <div class="candidate-info">
+            <p class="eyebrow">Kandidát / kandidátka</p>
+            <h3>Jméno Příjmení</h3>
+            <p>Krátké osobní představení, zkušenosti a témata, kterým se chce věnovat.</p>
+          </div>
+        </div>
+      </div>
+      <div class="team-note reveal">↓ Kandidáti budou přidáni po dodání fotografií a podkladů.</div>
+    </section>
+
+    <section class="program section-light" id="program">
+      <div class="section-number">04</div>
+      <div class="section-heading reveal">
+        <p class="eyebrow">Program</p>
+        <h2>Co chceme<br><strong>změnit.</strong></h2>
+        <p class="section-intro">Program zatím slouží jako vizuální kostra. Po dodání vašeho skutečného programu z něj vytvoříme interaktivní část: problém → řešení → postup → měřitelný výsledek.</p>
+      </div>
+      <div class="priority-grid">
+        <article class="priority reveal"><span>01</span><h3>Město a jeho energie</h3><p>Prostor pro konkrétní priority a projekty.</p></article>
+        <article class="priority reveal"><span>02</span><h3>Podnikání a inovace</h3><p>Prostor pro konkrétní priority a projekty.</p></article>
+        <article class="priority reveal"><span>03</span><h3>Doprava a veřejný prostor</h3><p>Prostor pro konkrétní priority a projekty.</p></article>
+        <article class="priority reveal"><span>04</span><h3>Školství a budoucnost</h3><p>Prostor pro konkrétní priority a projekty.</p></article>
+        <article class="priority reveal"><span>05</span><h3>Transparentní radnice</h3><p>Prostor pro konkrétní priority a projekty.</p></article>
+        <article class="priority reveal"><span>06</span><h3>Život ve městě</h3><p>Prostor pro konkrétní priority a projekty.</p></article>
+      </div>
+    </section>
+
+    <section class="vision section-accent">
+      <div class="section-number">05</div>
+      <div class="vision-content reveal">
+        <p class="eyebrow">Naše vize</p>
+        <h2>Od nápadu<br><em>k výsledku.</em></h2>
+        <div class="process"><span>NÁPAD</span><i>→</i><span>PLÁN</span><i>→</i><span>REALIZACE</span><i>→</i><span>VÝSLEDEK</span></div>
+      </div>
+    </section>
+
+    <section class="transparency section-light">
+      <div class="section-number">06</div>
+      <div class="split reveal">
+        <div><p class="eyebrow">Transparentnost</p><h2>Říkat<br><strong>co, proč a za kolik.</strong></h2></div>
+        <div class="copy"><p class="large">Sem můžeme umístit financování kampaně, dokumenty, zdroje, rozpočty, výsledky a další informace, které mají být veřejně dohledatelné.</p></div>
+      </div>
+    </section>
+
+    <section class="contact section-dark" id="kontakt">
+      <div class="section-number">07</div>
+      <div class="contact-content reveal">
+        <p class="eyebrow">Zapojte se</p>
+        <h2>Máte nápad?<br><em>Řekněte nám ho.</em></h2>
+        <p>Finální kontakty, sociální sítě a případný kontaktní formulář doplníme z vašich podkladů.</p>
+        <a class="big-link" href="mailto:info@zlomnice.cz">info@zlomnice.cz <span>↗</span></a>
+      </div>
+      <footer><span>Z:LOMNICE</span><span>© 2026</span></footer>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
 </html>
