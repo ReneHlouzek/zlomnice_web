@@ -12,7 +12,6 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const slides = [...document.querySelectorAll(slideSelector)];
   const progressBar = document.querySelector(progressSelector);
   if (!section || !slides.length) return;
-
   const isPeople = sectionSelector === '.people-scroll';
   const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
@@ -22,9 +21,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
 
     if (isPeople) {
-      // Každý kandidát má vlastní, stabilní scénu:
-      // 1. příjezd zleva, 2. zastavení, 3. odhalení textu,
-      // 4. chvíli drží celý text, 5. odjezd doprava, 6. dozní text.
+      // Každý kandidát: příjezd zprava, zastavení, text, odjezd doleva.
       const totalScenes = slides.length;
       const scene = progress * totalScenes;
 
@@ -33,9 +30,8 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         const art = slide.querySelector('.person-art');
         const t = scene - index;
 
-        // Kandidát je mimo svou scénu.
         if (t < -0.35 || t > 1.45) {
-          const off = t < 0 ? -120 : 120;
+          const off = t < 0 ? 120 : -120;
           slide.style.transform = `translate3d(${off}%,0,0) scale(0.68)`;
           slide.style.opacity = '0';
           slide.style.pointerEvents = 'none';
@@ -46,7 +42,6 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
           return;
         }
 
-        // Fáze kandidáta.
         let x = 0;
         let scale = 1;
         let slideOpacity = 1;
@@ -54,38 +49,32 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         let textOpacity = 0;
 
         if (t < 0.22) {
-          // Příjezd zleva a zvětšování.
           const p = clamp(t / 0.22);
-          x = -100 * (1 - p);
+          x = 100 * (1 - p);
           scale = 0.68 + 0.32 * p;
           slideOpacity = p;
         } else if (t < 0.40) {
-          // Klidná prodleva po příjezdu. Portrét stojí.
           x = 0;
           scale = 1;
         } else if (t < 0.62) {
-          // Text se odhaluje až po úplném zastavení portrétu.
           x = 0;
           scale = 1;
           textProgress = clamp((t - 0.40) / 0.22);
           textOpacity = textProgress;
         } else if (t < 0.82) {
-          // Text je celý vidět a portrét ještě stále stojí.
           x = 0;
           scale = 1;
           textProgress = 1;
           textOpacity = 1;
         } else if (t < 1.10) {
-          // Portrét i text odjíždějí doprava společně.
           const p = clamp((t - 0.82) / 0.28);
-          x = 100 * p;
+          x = -100 * p;
           scale = 1 - 0.08 * p;
           textProgress = 1;
           textOpacity = 1;
         } else {
-          // Portrét už je pryč, text ještě chvíli doznívá.
           const p = clamp((t - 1.10) / 0.35);
-          x = 100;
+          x = -100;
           scale = 0.92;
           textProgress = 1;
           textOpacity = 1 - p;
@@ -104,10 +93,8 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         if (art) art.style.transform = `scale(${scale === 1 ? 1 : 0.94 + 0.06 * scale})`;
       });
     } else {
-      // Původní animace priorit.
       const carouselLength = Math.max(0, slides.length - 1);
       const position = progress * carouselLength;
-
       slides.forEach((slide, index) => {
         const distance = index - position;
         const absDistance = Math.abs(distance);
@@ -117,13 +104,12 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         const x = distance * 100;
         const copy = slide.querySelector('.priority-copy');
         const art = slide.querySelector('.priority-art');
-
         slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
         slide.style.opacity = String(opacity);
         slide.style.pointerEvents = absDistance < 0.5 ? 'auto' : 'none';
         if (copy) {
           copy.style.opacity = String(Math.max(0, 1 - normalized * 0.9));
-          copy.style.transform = `translate3d(0,0,0)`;
+          copy.style.transform = 'translate3d(0,0,0)';
           copy.style.clipPath = 'none';
         }
         if (art) art.style.transform = `scale(${0.94 + (1 - normalized) * 0.06})`;
@@ -140,7 +126,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 
 let ticking = false;
 const updatePriority = setupScrollCarousel('.priority-scroll', '.priority-slide', '.priority-progress span', 'rtl');
-const updatePeople = setupScrollCarousel('.people-scroll', '.person-slide', '.people-progress span', 'ltr');
+const updatePeople = setupScrollCarousel('.people-scroll', '.person-slide', '.people-progress span', 'rtl');
 
 function onScroll() {
   if (ticking) return;
