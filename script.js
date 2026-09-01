@@ -15,11 +15,17 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const progressBar = document.querySelector(progressSelector);
   if (!section || !slides.length) return;
 
+  const isPeople = sectionSelector === '.people-scroll';
+
+  function clamp(value, min = 0, max = 1) {
+    return Math.max(min, Math.min(max, value));
+  }
+
   function update() {
     const rect = section.getBoundingClientRect();
     const travel = section.offsetHeight - window.innerHeight;
     const raw = travel > 0 ? -rect.top / travel : 0;
-    const progress = Math.max(0, Math.min(1, raw));
+    const progress = clamp(raw);
     const position = progress * (slides.length - 1);
 
     slides.forEach((slide, index) => {
@@ -37,12 +43,30 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 
       const copy = slide.querySelector('.priority-copy, .person-info');
       const art = slide.querySelector('.priority-art, .person-art');
+
       if (copy) {
-        const copyOpacity = Math.max(0, 1 - normalized * 0.9);
-        const copyShift = incoming ? (direction === 'ltr' ? -30 : 30) * normalized : 0;
-        copy.style.opacity = String(copyOpacity);
-        copy.style.transform = `translate3d(${copyShift}px,0,0)`;
+        if (isPeople) {
+          // U lidí se nejdřív musí dokončit příjezd portrétu.
+          // Teprve potom se text postupně odkrývá shora dolů.
+          const revealStart = 0.28;
+          const revealEnd = 0.04;
+          const textProgress = clamp((revealStart - absDistance) / (revealStart - revealEnd));
+          const textOpacity = Math.min(1, textProgress * 1.18);
+          const textShift = (1 - textProgress) * 26;
+          const clipBottom = (1 - textProgress) * 100;
+
+          copy.style.opacity = String(textOpacity);
+          copy.style.transform = `translate3d(${textShift}px,0,0)`;
+          copy.style.clipPath = `inset(0 0 ${clipBottom}% 0)`;
+        } else {
+          const copyOpacity = Math.max(0, 1 - normalized * 0.9);
+          const copyShift = incoming ? (direction === 'ltr' ? -30 : 30) * normalized : 0;
+          copy.style.opacity = String(copyOpacity);
+          copy.style.transform = `translate3d(${copyShift}px,0,0)`;
+          copy.style.clipPath = 'none';
+        }
       }
+
       if (art) {
         const artScale = 0.94 + (1 - normalized) * 0.06;
         art.style.transform = `scale(${artScale})`;
