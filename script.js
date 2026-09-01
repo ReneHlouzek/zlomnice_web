@@ -21,7 +21,6 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
 
     if (isPeople) {
-      // Kandidáti přijíždějí ZPRAVA a při scrollování odjíždějí DOLEVA.
       const totalScenes = slides.length;
       const scene = progress * totalScenes;
 
@@ -30,9 +29,9 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         const art = slide.querySelector('.person-art');
         const t = scene - index;
 
-        if (t < -0.35 || t > 1.45) {
+        if (t < -0.50 || t > 1.65) {
           const off = t < 0 ? 120 : -120;
-          slide.style.transform = `translate3d(${off}%,0,0) scale(0.68)`;
+          slide.style.transform = `translate3d(${off}%,0,0) scale(0.58)`;
           slide.style.opacity = '0';
           slide.style.pointerEvents = 'none';
           if (copy) {
@@ -48,37 +47,43 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         let textProgress = 0;
         let textOpacity = 0;
 
-        if (t < 0.22) {
-          const p = clamp(t / 0.22);
+        // Pomalý nájezd zprava, zároveň se portrét zvětšuje do plné velikosti.
+        if (t < 0.30) {
+          const p = clamp(t / 0.30);
           x = 100 * (1 - p);
-          scale = 0.68 + 0.32 * p;
+          scale = 0.58 + 0.42 * p;
           slideOpacity = p;
-        } else if (t < 0.40) {
+        // Krátké klidové zastavení po dojezdu.
+        } else if (t < 0.48) {
           x = 0;
           scale = 1;
-        } else if (t < 0.62) {
+        // Pomalé odhalení textu až po zastavení portrétu.
+        } else if (t < 0.78) {
           x = 0;
           scale = 1;
-          textProgress = clamp((t - 0.40) / 0.22);
+          textProgress = clamp((t - 0.48) / 0.30);
           textOpacity = textProgress;
-        } else if (t < 0.82) {
+        // Celý text zůstane déle viditelný.
+        } else if (t < 1.02) {
           x = 0;
           scale = 1;
           textProgress = 1;
           textOpacity = 1;
-        } else if (t < 1.10) {
-          const p = clamp((t - 0.82) / 0.28);
+        // Pomalý odjezd doleva.
+        } else if (t < 1.38) {
+          const p = clamp((t - 1.02) / 0.36);
           x = -100 * p;
-          scale = 1 - 0.08 * p;
+          scale = 1 - 0.10 * p;
           textProgress = 1;
           textOpacity = 1;
+        // Text ještě dlouho doznívá po odjezdu portrétu.
         } else {
-          const p = clamp((t - 1.10) / 0.35);
+          const p = clamp((t - 1.38) / 0.27);
           x = -100;
-          scale = 0.92;
+          scale = 0.90;
           textProgress = 1;
           textOpacity = 1 - p;
-          slideOpacity = 1 - p * 0.35;
+          slideOpacity = 1 - p * 0.30;
         }
 
         slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
@@ -90,7 +95,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
           copy.style.transform = `translate3d(0,${(1 - textProgress) * 26}px,0)`;
           copy.style.clipPath = `inset(0 0 ${(1 - textProgress) * 100}% 0)`;
         }
-        if (art) art.style.transform = `scale(${scale === 1 ? 1 : 0.94 + 0.06 * scale})`;
+        if (art) art.style.transform = 'scale(1)';
       });
     } else {
       const carouselLength = Math.max(0, slides.length - 1);
