@@ -1,6 +1,5 @@
 const revealItems = document.querySelectorAll('.reveal');
 
-// Klasické reveal animace se spouštějí znovu při každém návratu do viewportu.
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) entry.target.classList.add('visible');
@@ -27,10 +26,12 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const raw = travel > 0 ? -rect.top / travel : 0;
     const progress = clamp(raw);
 
-    // U lidí dáme každému kandidátovi více prostoru pro přirozené pořadí:
-    // portrét přijede -> chvíli zůstane sám -> objeví se text -> portrét odjede -> text ještě dozní.
-    const lead = isPeople ? 0.42 : 0;
-    const tail = isPeople ? 0.42 : 0;
+    // U lidí je více prostoru pro celý příběh kandidáta:
+    // 1) portrét přijede, 2) zastaví se bez textu,
+    // 3) teprve potom se odhalí text, 4) vše začne odjíždět,
+    // 5) text ještě chvíli doznívá.
+    const lead = isPeople ? 0.60 : 0;
+    const tail = isPeople ? 0.55 : 0;
     const carouselLength = Math.max(0, slides.length - 1) + lead + tail;
     const position = progress * carouselLength - lead;
 
@@ -52,10 +53,10 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 
       if (copy) {
         if (isPeople) {
-          // Fáze 1: portrét je ještě mimo střed -> text není vidět.
-          // Fáze 2: portrét je na místě -> text se pomalu odhalí shora.
-          const revealStart = 0.10;
-          const revealEnd = -0.18;
+          // Text se nesmí objevit během příjezdu. Začne až poté,
+          // co je portrét bezpečně na místě, a zůstane déle při odjezdu.
+          const revealStart = -0.02;
+          const revealEnd = -0.28;
           const textProgress = clamp(
             (revealStart - distance) / (revealStart - revealEnd)
           );
@@ -63,10 +64,9 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
           const textShift = (1 - textProgress) * 26;
           const clipBottom = (1 - textProgress) * 100;
 
-          // Fáze 3: kandidát začíná odjíždět doprava.
-          // Text ještě zůstane chvíli plně čitelný a až potom začne pomalu mizet.
-          const exitStart = 0.24;
-          const exitEnd = 0.90;
+          // Kandidát může začít odjíždět, ale text ještě zůstává.
+          const exitStart = 0.42;
+          const exitEnd = 1.08;
           const exitProgress = distance > exitStart
             ? clamp((distance - exitStart) / (exitEnd - exitStart))
             : 0;
