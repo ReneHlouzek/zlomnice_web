@@ -21,7 +21,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
 
     if (isPeople) {
-      // Každý kandidát: příjezd zprava, zastavení, text, odjezd doleva.
+      // Kandidáti přijíždějí ZPRAVA a při scrollování odjíždějí DOLEVA.
       const totalScenes = slides.length;
       const scene = progress * totalScenes;
 
