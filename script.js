@@ -52,10 +52,10 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 
       if (copy) {
         if (isPeople) {
-          // Text přichází až ve chvíli, kdy je portrét téměř na svém místě.
-          // Odhalení probíhá shora dolů a je přímo řízené dalším scrollováním.
-          const revealStart = 0.27;
-          const revealEnd = 0.035;
+          // Text se začne odhalovat už při přibližování portrétu a zůstává
+          // déle čitelný i po jeho úplném dojetí do středu.
+          const revealStart = 0.42;
+          const revealEnd = 0.06;
           const textProgress = clamp(
             (revealStart - absDistance) / (revealStart - revealEnd)
           );
