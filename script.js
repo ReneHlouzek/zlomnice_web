@@ -27,10 +27,10 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const raw = travel > 0 ? -rect.top / travel : 0;
     const progress = clamp(raw);
 
-    // U lidí necháme na začátku krátký nájezd prvního portrétu a na konci
-    // dostatek prostoru, aby poslední portrét skutečně dojel do středu.
-    const lead = isPeople ? 0.30 : 0;
-    const tail = isPeople ? 0.30 : 0;
+    // U lidí dáme každému kandidátovi více prostoru pro přirozené pořadí:
+    // portrét přijede -> chvíli zůstane sám -> objeví se text -> portrét odjede -> text ještě dozní.
+    const lead = isPeople ? 0.42 : 0;
+    const tail = isPeople ? 0.42 : 0;
     const carouselLength = Math.max(0, slides.length - 1) + lead + tail;
     const position = progress * carouselLength - lead;
 
@@ -52,18 +52,27 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 
       if (copy) {
         if (isPeople) {
-          // Text se začne odhalovat už při přibližování portrétu a zůstává
-          // déle čitelný i po jeho úplném dojetí do středu.
-          const revealStart = 0.42;
-          const revealEnd = 0.06;
+          // Fáze 1: portrét je ještě mimo střed -> text není vidět.
+          // Fáze 2: portrét je na místě -> text se pomalu odhalí shora.
+          const revealStart = 0.10;
+          const revealEnd = -0.18;
           const textProgress = clamp(
-            (revealStart - absDistance) / (revealStart - revealEnd)
+            (revealStart - distance) / (revealStart - revealEnd)
           );
-          const textOpacity = textProgress;
-          const textShift = (1 - textProgress) * 24;
+
+          const textShift = (1 - textProgress) * 26;
           const clipBottom = (1 - textProgress) * 100;
 
-          copy.style.opacity = String(textOpacity);
+          // Fáze 3: kandidát začíná odjíždět doprava.
+          // Text ještě zůstane chvíli plně čitelný a až potom začne pomalu mizet.
+          const exitStart = 0.24;
+          const exitEnd = 0.90;
+          const exitProgress = distance > exitStart
+            ? clamp((distance - exitStart) / (exitEnd - exitStart))
+            : 0;
+          const exitOpacity = 1 - exitProgress;
+
+          copy.style.opacity = String(textProgress * exitOpacity);
           copy.style.transform = `translate3d(0,${textShift}px,0)`;
           copy.style.clipPath = `inset(0 0 ${clipBottom}% 0)`;
         } else {
