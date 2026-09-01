@@ -1,10 +1,12 @@
 const revealItems = document.querySelectorAll('.reveal');
 
+// Animace se spustí znovu pokaždé, když prvek znovu vstoupí do viewportu.
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-      observer.unobserve(entry.target);
+    } else {
+      entry.target.classList.remove('visible');
     }
   });
 }, { threshold: 0.14 });
