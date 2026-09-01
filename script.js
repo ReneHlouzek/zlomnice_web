@@ -26,7 +26,13 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const travel = section.offsetHeight - window.innerHeight;
     const raw = travel > 0 ? -rect.top / travel : 0;
     const progress = clamp(raw);
-    const position = progress * (slides.length - 1);
+
+    // U lidí necháme na začátku krátký nájezd prvního portrétu a na konci
+    // dostatek prostoru, aby poslední portrét skutečně dojel do středu.
+    const lead = isPeople ? 0.30 : 0;
+    const tail = isPeople ? 0.30 : 0;
+    const carouselLength = Math.max(0, slides.length - 1) + lead + tail;
+    const position = progress * carouselLength - lead;
 
     slides.forEach((slide, index) => {
       const distance = index - position;
@@ -46,17 +52,19 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 
       if (copy) {
         if (isPeople) {
-          // U lidí se nejdřív musí dokončit příjezd portrétu.
-          // Teprve potom se text postupně odkrývá shora dolů.
-          const revealStart = 0.28;
-          const revealEnd = 0.04;
-          const textProgress = clamp((revealStart - absDistance) / (revealStart - revealEnd));
-          const textOpacity = Math.min(1, textProgress * 1.18);
-          const textShift = (1 - textProgress) * 26;
+          // Text přichází až ve chvíli, kdy je portrét téměř na svém místě.
+          // Odhalení probíhá shora dolů a je přímo řízené dalším scrollováním.
+          const revealStart = 0.27;
+          const revealEnd = 0.035;
+          const textProgress = clamp(
+            (revealStart - absDistance) / (revealStart - revealEnd)
+          );
+          const textOpacity = textProgress;
+          const textShift = (1 - textProgress) * 24;
           const clipBottom = (1 - textProgress) * 100;
 
           copy.style.opacity = String(textOpacity);
-          copy.style.transform = `translate3d(${textShift}px,0,0)`;
+          copy.style.transform = `translate3d(0,${textShift}px,0)`;
           copy.style.clipPath = `inset(0 0 ${clipBottom}% 0)`;
         } else {
           const copyOpacity = Math.max(0, 1 - normalized * 0.9);
