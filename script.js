@@ -10,8 +10,7 @@ const observer = new IntersectionObserver((entries) => {
 revealItems.forEach((item) => observer.observe(item));
 
 // PRIORITY: při scrollování se jednotlivá témata plynule posouvají zprava doleva.
-// Nadcházející téma se současně postupně zvětšuje, takže působí jako přirozené
-// přiblížení pozornosti před jeho příchodem do středu.
+// Nadcházející téma začíná výrazně menší a při přibližování se zvětšuje.
 const prioritySection = document.querySelector('.priority-scroll');
 const prioritySlides = [...document.querySelectorAll('.priority-slide')];
 const progressBar = document.querySelector('.priority-progress span');
@@ -30,13 +29,31 @@ function updatePriorities() {
     const absDistance = Math.abs(distance);
     const opacity = Math.max(0, 1 - absDistance * 0.72);
 
-    // Slide přicházející zprava začíná menší a při přibližování se zvětšuje.
-    // Aktivní slide je 1.0; odjíždějící se naopak lehce zmenšuje.
+    // Výraznější zoom-in: nové téma začíná na 68 % a při příchodu
+    // do středu se plynule dostane na 100 %. Odcházející téma se lehce zmenší.
     let scale;
     if (distance > 0) {
-      scale = 0.78 + (1 - Math.min(distance, 1)) * 0.22;
+      const incomingProgress = 1 - Math.min(distance, 1);
+      scale = 0.68 + incomingProgress * 0.32;
     } else {
-      scale = 1 - Math.min(absDistance, 1) * 0.14;
+      scale = 1 - Math.min(absDistance, 1) * 0.16;
+    }
+
+    // Text se při příchodu zároveň postupně odhaluje a lehce se posouvá
+    // směrem do své finální pozice. Tím vzniká výraznější pocit přiblížení.
+    const copy = slide.querySelector('.priority-copy');
+    const art = slide.querySelector('.priority-art');
+    if (copy) {
+      const copyOpacity = distance > 0
+        ? Math.max(0, 1 - Math.min(distance, 1) * 0.9)
+        : Math.max(0.75, 1 - Math.min(absDistance, 1) * 0.25);
+      const copyShift = distance > 0 ? Math.min(distance, 1) * 26 : 0;
+      copy.style.opacity = String(copyOpacity);
+      copy.style.transform = `translate3d(${copyShift}px,0,0)`;
+    }
+    if (art) {
+      const artScale = distance > 0 ? 0.94 + (1 - Math.min(distance, 1)) * 0.06 : 1;
+      art.style.transform = `scale(${artScale})`;
     }
 
     const x = distance * 100;
@@ -59,7 +76,7 @@ function requestPriorityUpdate() {
 
 if (prioritySection) {
   prioritySlides.forEach((slide, index) => {
-    slide.style.transform = `translate3d(${index * 100}%,0,0) scale(${index ? 0.78 : 1})`;
+    slide.style.transform = `translate3d(${index * 100}%,0,0) scale(${index ? 0.68 : 1})`;
     slide.style.opacity = index === 0 ? '1' : '0';
   });
   window.addEventListener('scroll', requestPriorityUpdate, { passive: true });
