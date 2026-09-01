@@ -9,80 +9,74 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.14 });
 revealItems.forEach((item) => observer.observe(item));
 
-// PRIORITY: při scrollování se jednotlivá témata plynule posouvají zprava doleva.
-// Nadcházející téma začíná výrazně menší a při přibližování se zvětšuje.
-const prioritySection = document.querySelector('.priority-scroll');
-const prioritySlides = [...document.querySelectorAll('.priority-slide')];
-const progressBar = document.querySelector('.priority-progress span');
-let ticking = false;
+function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, direction) {
+  const section = document.querySelector(sectionSelector);
+  const slides = [...document.querySelectorAll(slideSelector)];
+  const progressBar = document.querySelector(progressSelector);
+  if (!section || !slides.length) return;
 
-function updatePriorities() {
-  if (!prioritySection || !prioritySlides.length) return;
-  const rect = prioritySection.getBoundingClientRect();
-  const travel = prioritySection.offsetHeight - window.innerHeight;
-  const raw = travel > 0 ? -rect.top / travel : 0;
-  const progress = Math.max(0, Math.min(1, raw));
-  const position = progress * (prioritySlides.length - 1);
+  function update() {
+    const rect = section.getBoundingClientRect();
+    const travel = section.offsetHeight - window.innerHeight;
+    const raw = travel > 0 ? -rect.top / travel : 0;
+    const progress = Math.max(0, Math.min(1, raw));
+    const position = progress * (slides.length - 1);
 
-  prioritySlides.forEach((slide, index) => {
-    const distance = index - position;
-    const absDistance = Math.abs(distance);
-    const opacity = Math.max(0, 1 - absDistance * 0.72);
+    slides.forEach((slide, index) => {
+      const distance = index - position;
+      const absDistance = Math.abs(distance);
+      const incoming = direction === 'ltr' ? distance < 0 : distance > 0;
+      const normalized = Math.min(absDistance, 1);
+      const scale = 0.68 + (1 - normalized) * 0.32;
+      const opacity = Math.max(0, 1 - normalized * 0.72);
+      const x = distance * 100;
 
-    // Výraznější zoom-in: nové téma začíná na 68 % a při příchodu
-    // do středu se plynule dostane na 100 %. Odcházející téma se lehce zmenší.
-    let scale;
-    if (distance > 0) {
-      const incomingProgress = 1 - Math.min(distance, 1);
-      scale = 0.68 + incomingProgress * 0.32;
-    } else {
-      scale = 1 - Math.min(absDistance, 1) * 0.16;
-    }
+      slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
+      slide.style.opacity = String(opacity);
+      slide.style.pointerEvents = absDistance < 0.5 ? 'auto' : 'none';
 
-    // Text se při příchodu zároveň postupně odhaluje a lehce se posouvá
-    // směrem do své finální pozice. Tím vzniká výraznější pocit přiblížení.
-    const copy = slide.querySelector('.priority-copy');
-    const art = slide.querySelector('.priority-art');
-    if (copy) {
-      const copyOpacity = distance > 0
-        ? Math.max(0, 1 - Math.min(distance, 1) * 0.9)
-        : Math.max(0.75, 1 - Math.min(absDistance, 1) * 0.25);
-      const copyShift = distance > 0 ? Math.min(distance, 1) * 26 : 0;
-      copy.style.opacity = String(copyOpacity);
-      copy.style.transform = `translate3d(${copyShift}px,0,0)`;
-    }
-    if (art) {
-      const artScale = distance > 0 ? 0.94 + (1 - Math.min(distance, 1)) * 0.06 : 1;
-      art.style.transform = `scale(${artScale})`;
-    }
+      const copy = slide.querySelector('.priority-copy, .person-info');
+      const art = slide.querySelector('.priority-art, .person-art');
+      if (copy) {
+        const copyOpacity = Math.max(0, 1 - normalized * 0.9);
+        const copyShift = incoming ? (direction === 'ltr' ? -30 : 30) * normalized : 0;
+        copy.style.opacity = String(copyOpacity);
+        copy.style.transform = `translate3d(${copyShift}px,0,0)`;
+      }
+      if (art) {
+        const artScale = 0.94 + (1 - normalized) * 0.06;
+        art.style.transform = `scale(${artScale})`;
+      }
+    });
 
-    const x = distance * 100;
-    slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
-    slide.style.opacity = String(opacity);
-    slide.style.pointerEvents = Math.abs(distance) < 0.5 ? 'auto' : 'none';
-  });
-
-  if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
-  prioritySection.classList.toggle('is-finished', progress > 0.985);
-  ticking = false;
-}
-
-function requestPriorityUpdate() {
-  if (!ticking) {
-    window.requestAnimationFrame(updatePriorities);
-    ticking = true;
+    if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
+    section.classList.toggle('is-finished', progress > 0.985);
   }
-}
 
-if (prioritySection) {
-  prioritySlides.forEach((slide, index) => {
-    slide.style.transform = `translate3d(${index * 100}%,0,0) scale(${index ? 0.68 : 1})`;
+  slides.forEach((slide, index) => {
+    const start = direction === 'ltr' ? -index * 100 : index * 100;
+    slide.style.transform = `translate3d(${start}%,0,0) scale(${index ? 0.68 : 1})`;
     slide.style.opacity = index === 0 ? '1' : '0';
   });
-  window.addEventListener('scroll', requestPriorityUpdate, { passive: true });
-  window.addEventListener('resize', requestPriorityUpdate);
-  updatePriorities();
+  update();
+  return update;
 }
+
+let ticking = false;
+const updatePriority = setupScrollCarousel('.priority-scroll', '.priority-slide', '.priority-progress span', 'rtl');
+const updatePeople = setupScrollCarousel('.people-scroll', '.person-slide', '.people-progress span', 'ltr');
+
+function onScroll() {
+  if (ticking) return;
+  window.requestAnimationFrame(() => {
+    updatePriority?.();
+    updatePeople?.();
+    ticking = false;
+  });
+  ticking = true;
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('resize', onScroll);
 
 const menuButton = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.desktop-nav');
