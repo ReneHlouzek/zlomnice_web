@@ -21,6 +21,8 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
 
     if (isPeople) {
+      // Jeden kandidát má vlastní scénu. Další začne přijíždět
+      // až ve chvíli, kdy předchozí už téměř zmizel vlevo.
       const totalScenes = slides.length;
       const scene = progress * totalScenes;
 
@@ -29,7 +31,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         const art = slide.querySelector('.person-art');
         const t = scene - index;
 
-        if (t < -0.65 || t > 1.80) {
+        if (t < -0.30 || t > 1.80) {
           const off = t < 0 ? 120 : -120;
           slide.style.transform = `translate3d(${off}%,0,0) scale(0.52)`;
           slide.style.opacity = '0';
@@ -47,36 +49,32 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         let textProgress = 0;
         let textOpacity = 0;
 
-        // Pomalý nájezd zprava + plynulé zvětšení do plné velikosti.
-        if (t < 0.34) {
-          const p = clamp(t / 0.34);
+        // Nájezd je posunutý později: nový portrét začne až poté,
+        // co předchozí scéna už téměř dokončila odjezd.
+        if (t < 0.30) {
+          const p = clamp(t / 0.30);
           x = 100 * (1 - p);
           scale = 0.52 + 0.48 * p;
           slideOpacity = p;
-        // Delší zastavení po dojezdu.
         } else if (t < 0.56) {
           x = 0;
           scale = 1;
-        // Pomalejší odhalování textu až po úplném zastavení portrétu.
         } else if (t < 0.94) {
           x = 0;
           scale = 1;
           textProgress = clamp((t - 0.56) / 0.38);
           textOpacity = textProgress;
-        // Delší doba, kdy je celý text plně čitelný.
         } else if (t < 1.20) {
           x = 0;
           scale = 1;
           textProgress = 1;
           textOpacity = 1;
-        // Pomalý odjezd doleva.
         } else if (t < 1.62) {
           const p = clamp((t - 1.20) / 0.42);
           x = -100 * p;
           scale = 1 - 0.10 * p;
           textProgress = 1;
           textOpacity = 1;
-        // Delší doznívání textu po odjezdu portrétu.
         } else {
           const p = clamp((t - 1.62) / 0.18);
           x = -100;
