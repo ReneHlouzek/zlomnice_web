@@ -1,3 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-label="Zlomnice logo">
-<image width="640" height="640" href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAoKAoADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/AP/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAQUCf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQMBAT8Bf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIBAT8Bf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEABj8Cf//Z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-label="Zlomnice – vize pro budoucnost Lomnice">
+<defs><clipPath id="c"><circle cx="320" cy="320" r="320"/></clipPath></defs>
+<circle cx="320" cy="320" r="320" fill="#f5c518"/>
+<g clip-path="url(#c)">
+<text x="48" y="296" font-family="Arial,Helvetica,sans-serif" font-size="78" font-weight="900" letter-spacing="-3" fill="#050505">Z</text>
+<circle cx="133" cy="250" r="12" fill="#fff"/><circle cx="133" cy="282" r="12" fill="#fff"/>
+<text x="159" y="296" font-family="Arial,Helvetica,sans-serif" font-size="78" font-weight="900" letter-spacing="-3" fill="#050505">LOMNICE</text>
+<text x="320" y="366" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="28" letter-spacing="2" fill="#fff">vize pro budoucnost Lomnice</text>
+<g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M78 505h484M92 505v-74l30-20 20-42 20 42 30 20v74M104 431h116M113 459h98M121 478h15m18 0h15m20 0h15M138 420v-32h24v32m-12-32v-18"/>
+<path d="M270 505V393l18-20 18 20v112M288 373v-28m-14 13h28M278 392h20M278 415h20M278 440h20"/>
+<path d="M345 505v-83l35-29 35 29v83M356 443h48M369 423v-16h22v16M367 463h26"/>
+<path d="M448 505v-100q0-45 52-45t52 45v100M456 385h88M462 375q38-20 76 0M473 360q27-13 54 0M448 421h104M468 421v84m64-84v84M470 421h60l-8 84h-44zM474 365l-7-19m68 19 7-19"/>
+<path d="M521 457h32l-8 48h-16zM535 420l18-22m-18 0 18 22"/>
+</g></g></svg>
