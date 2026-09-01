@@ -12,6 +12,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const slides = [...document.querySelectorAll(slideSelector)];
   const progressBar = document.querySelector(progressSelector);
   if (!section || !slides.length) return;
+
   const isPeople = sectionSelector === '.people-scroll';
   const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
@@ -19,77 +20,120 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const rect = section.getBoundingClientRect();
     const travel = section.offsetHeight - window.innerHeight;
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
-    const lead = isPeople ? 0.60 : 0;
-    const tail = isPeople ? 0.55 : 0;
-    const carouselLength = Math.max(0, slides.length - 1) + lead + tail;
-    const position = progress * carouselLength - lead;
 
-    slides.forEach((slide, index) => {
-      let distance = index - position;
-      const absDistance = Math.abs(distance);
-      const normalized = Math.min(absDistance, 1);
-      const scale = 0.68 + (1 - normalized) * 0.32;
-      const opacity = Math.max(0, 1 - normalized * 0.72);
-      const copy = slide.querySelector('.priority-copy, .person-info');
-      const art = slide.querySelector('.priority-art, .person-art');
+    if (isPeople) {
+      // Každý kandidát má vlastní, stabilní scénu:
+      // 1. příjezd zleva, 2. zastavení, 3. odhalení textu,
+      // 4. chvíli drží celý text, 5. odjezd doprava, 6. dozní text.
+      const totalScenes = slides.length;
+      const scene = progress * totalScenes;
 
-      if (isPeople) {
-        // Fáze 1: portrét přijíždí. Text je skrytý.
-        // Fáze 2: portrét stojí přesně na místě a teprve potom se odhaluje text.
-        // Během celé fáze odhalování se portrét NEHÝBE.
-        // Fáze 3: po kompletním odhalení textu se portrét i text vydají doprava.
-        const revealStart = -0.02;
-        const revealEnd = -0.34;
-        const textProgress = clamp((revealStart - distance) / (revealStart - revealEnd));
-        const textShift = (1 - textProgress) * 26;
-        const clipBottom = (1 - textProgress) * 100;
+      slides.forEach((slide, index) => {
+        const copy = slide.querySelector('.person-info');
+        const art = slide.querySelector('.person-art');
+        const t = scene - index;
 
-        // Poslední část odjezdu je záměrně dlouhá, aby text dozníval až po portrétu.
-        const exitStart = 0.62;
-        const exitEnd = 1.20;
-        const exitProgress = distance > exitStart ? clamp((distance - exitStart) / (exitEnd - exitStart)) : 0;
-        const exitOpacity = 1 - exitProgress;
+        // Kandidát je mimo svou scénu.
+        if (t < -0.35 || t > 1.45) {
+          const off = t < 0 ? -120 : 120;
+          slide.style.transform = `translate3d(${off}%,0,0) scale(0.68)`;
+          slide.style.opacity = '0';
+          slide.style.pointerEvents = 'none';
+          if (copy) {
+            copy.style.opacity = '0';
+            copy.style.clipPath = 'inset(0 0 100% 0)';
+          }
+          return;
+        }
 
-        // Samotný slide se nesmí hýbat, dokud není text kompletní.
-        let slideDistance = distance;
-        if (distance >= -0.02 && distance <= 0.62) slideDistance = 0;
+        // Fáze kandidáta.
+        let x = 0;
+        let scale = 1;
+        let slideOpacity = 1;
+        let textProgress = 0;
+        let textOpacity = 0;
 
-        slide.style.transform = `translate3d(${slideDistance * 100}%,0,0) scale(${slideDistance === 0 ? 1 : scale})`;
-        slide.style.opacity = String(slideDistance === 0 ? 1 : opacity);
-        slide.style.pointerEvents = absDistance < 0.5 ? 'auto' : 'none';
+        if (t < 0.22) {
+          // Příjezd zleva a zvětšování.
+          const p = clamp(t / 0.22);
+          x = -100 * (1 - p);
+          scale = 0.68 + 0.32 * p;
+          slideOpacity = p;
+        } else if (t < 0.40) {
+          // Klidná prodleva po příjezdu. Portrét stojí.
+          x = 0;
+          scale = 1;
+        } else if (t < 0.62) {
+          // Text se odhaluje až po úplném zastavení portrétu.
+          x = 0;
+          scale = 1;
+          textProgress = clamp((t - 0.40) / 0.22);
+          textOpacity = textProgress;
+        } else if (t < 0.82) {
+          // Text je celý vidět a portrét ještě stále stojí.
+          x = 0;
+          scale = 1;
+          textProgress = 1;
+          textOpacity = 1;
+        } else if (t < 1.10) {
+          // Portrét i text odjíždějí doprava společně.
+          const p = clamp((t - 0.82) / 0.28);
+          x = 100 * p;
+          scale = 1 - 0.08 * p;
+          textProgress = 1;
+          textOpacity = 1;
+        } else {
+          // Portrét už je pryč, text ještě chvíli doznívá.
+          const p = clamp((t - 1.10) / 0.35);
+          x = 100;
+          scale = 0.92;
+          textProgress = 1;
+          textOpacity = 1 - p;
+          slideOpacity = 1 - p * 0.35;
+        }
+
+        slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
+        slide.style.opacity = String(slideOpacity);
+        slide.style.pointerEvents = x === 0 ? 'auto' : 'none';
 
         if (copy) {
-          copy.style.opacity = String(textProgress * exitOpacity);
-          copy.style.transform = `translate3d(0,${textShift}px,0)`;
-          copy.style.clipPath = `inset(0 0 ${clipBottom}% 0)`;
+          copy.style.opacity = String(textOpacity);
+          copy.style.transform = `translate3d(0,${(1 - textProgress) * 26}px,0)`;
+          copy.style.clipPath = `inset(0 0 ${(1 - textProgress) * 100}% 0)`;
         }
-        if (art) art.style.transform = `scale(${slideDistance === 0 ? 1 : 0.94 + (1 - normalized) * 0.06})`;
-      } else {
-        const incoming = direction === 'ltr' ? distance < 0 : distance > 0;
+        if (art) art.style.transform = `scale(${scale === 1 ? 1 : 0.94 + 0.06 * scale})`;
+      });
+    } else {
+      // Původní animace priorit.
+      const carouselLength = Math.max(0, slides.length - 1);
+      const position = progress * carouselLength;
+
+      slides.forEach((slide, index) => {
+        const distance = index - position;
+        const absDistance = Math.abs(distance);
+        const normalized = Math.min(absDistance, 1);
+        const scale = 0.68 + (1 - normalized) * 0.32;
+        const opacity = Math.max(0, 1 - normalized * 0.72);
         const x = distance * 100;
+        const copy = slide.querySelector('.priority-copy');
+        const art = slide.querySelector('.priority-art');
+
         slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
         slide.style.opacity = String(opacity);
         slide.style.pointerEvents = absDistance < 0.5 ? 'auto' : 'none';
         if (copy) {
-          const copyOpacity = Math.max(0, 1 - normalized * 0.9);
-          const copyShift = incoming ? (direction === 'ltr' ? -30 : 30) * normalized : 0;
-          copy.style.opacity = String(copyOpacity);
-          copy.style.transform = `translate3d(${copyShift}px,0,0)`;
+          copy.style.opacity = String(Math.max(0, 1 - normalized * 0.9));
+          copy.style.transform = `translate3d(0,0,0)`;
           copy.style.clipPath = 'none';
         }
         if (art) art.style.transform = `scale(${0.94 + (1 - normalized) * 0.06})`;
-      }
-    });
+      });
+    }
 
     if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
     section.classList.toggle('is-finished', progress > 0.985);
   }
 
-  slides.forEach((slide, index) => {
-    const start = direction === 'ltr' ? -index * 100 : index * 100;
-    slide.style.transform = `translate3d(${start}%,0,0) scale(${index ? 0.68 : 1})`;
-    slide.style.opacity = index === 0 ? '1' : '0';
-  });
   update();
   return update;
 }
@@ -97,6 +141,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 let ticking = false;
 const updatePriority = setupScrollCarousel('.priority-scroll', '.priority-slide', '.priority-progress span', 'rtl');
 const updatePeople = setupScrollCarousel('.people-scroll', '.person-slide', '.people-progress span', 'ltr');
+
 function onScroll() {
   if (ticking) return;
   window.requestAnimationFrame(() => {
