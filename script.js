@@ -15,14 +15,20 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const isPeople = sectionSelector === '.people-scroll';
   const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
+  // Give every candidate enough scroll space for the complete sequence:
+  // entrance from the right -> portrait pause -> text reveal -> full text pause
+  // -> exit to the left -> text fade. The duration scales with team size.
+  if (isPeople) section.style.height = `${Math.max(400, slides.length * 55)}vh`;
+  if (progressBar) progressBar.style.width = '100%';
+
   function update() {
     const rect = section.getBoundingClientRect();
     const travel = section.offsetHeight - window.innerHeight;
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
 
     if (isPeople) {
-      // Jeden kandidát má vlastní scénu. Další začne přijíždět
-      // až ve chvíli, kdy předchozí už téměř zmizel vlevo.
+      // Jeden kandidát má vlastní scénu. Každý nový portrét přijíždí zprava
+      // a předchozí odjíždí doleva. Text se objeví až po úplném ustálení portrétu.
       const totalScenes = slides.length;
       const scene = progress * totalScenes;
 
@@ -49,32 +55,36 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         let textProgress = 0;
         let textOpacity = 0;
 
-        // Nájezd je posunutý později: nový portrét začne až poté,
-        // co předchozí scéna už téměř dokončila odjezd.
+        // 0.00–0.30: portrait enters from the RIGHT.
         if (t < 0.30) {
           const p = clamp(t / 0.30);
           x = 100 * (1 - p);
           scale = 0.52 + 0.48 * p;
           slideOpacity = p;
+        // 0.30–0.56: portrait stands still before any text appears.
         } else if (t < 0.56) {
           x = 0;
           scale = 1;
+        // 0.56–0.94: text reveals while portrait remains completely still.
         } else if (t < 0.94) {
           x = 0;
           scale = 1;
           textProgress = clamp((t - 0.56) / 0.38);
           textOpacity = textProgress;
+        // 0.94–1.20: complete text remains visible and portrait stays still.
         } else if (t < 1.20) {
           x = 0;
           scale = 1;
           textProgress = 1;
           textOpacity = 1;
+        // 1.20–1.62: portrait and its complete text leave together to the LEFT.
         } else if (t < 1.62) {
           const p = clamp((t - 1.20) / 0.42);
           x = -100 * p;
           scale = 1 - 0.10 * p;
           textProgress = 1;
           textOpacity = 1;
+        // 1.62–1.80: after the portrait is gone, its text fades out slowly.
         } else {
           const p = clamp((t - 1.62) / 0.18);
           x = -100;
