@@ -1,0 +1,107 @@
+/* RESPONSIVE LAYOUT OVERRIDES */
+/* Velké obrazovky: využijeme prostor, ale zachováme čitelné max-width limity. */
+@media (min-width: 1400px){
+  .hero{padding-left:clamp(70px,6vw,120px);padding-right:clamp(70px,6vw,120px)}
+  .hero-copy{max-width:clamp(720px,48vw,900px)}
+  .hero-art-bg{width:min(52vw,820px)}
+  .story-section{max-width:1600px;padding-left:clamp(70px,6vw,120px);padding-right:clamp(70px,6vw,120px)}
+  .join-panel{max-width:1600px}
+  .priority-slide{padding-left:clamp(90px,8vw,150px);padding-right:clamp(90px,8vw,150px);gap:clamp(50px,6vw,110px)}
+  .priority-art{width:min(44vw,720px);height:min(62vh,680px)}
+  .priority-copy{max-width:700px}
+  .people-heading{left:clamp(90px,8vw,150px);width:min(390px,24vw)}
+  .people-heading p{font-size:17px}
+  .person-slide{padding-left:clamp(430px,32vw,600px);padding-right:clamp(90px,8vw,150px);gap:clamp(45px,5vw,100px)}
+  .person-art{width:min(37vw,660px);height:min(72vh,730px)}
+  .person-info{max-width:580px}
+  .person-info h3{font-size:clamp(58px,4.5vw,92px)}
+  .person-motto{font-size:22px;max-width:520px}
+  .people-progress{left:clamp(430px,32vw,600px);right:clamp(90px,8vw,150px)}
+}
+
+/* Notebook / menší desktop: zabráníme příliš velkým prázdným plochám. */
+@media (min-width:951px) and (max-width:1399px){
+  .hero-art-bg{width:min(50vw,650px)}
+  .hero-copy{max-width:60vw}
+  .story-section{min-height:82vh}
+  .priority-slide{padding-left:5vw;padding-right:5vw;gap:4vw}
+  .priority-art{width:min(40vw,560px);height:min(58vh,560px)}
+  .priority-copy{max-width:560px}
+  .people-heading{left:5vw;width:min(300px,25vw)}
+  .people-heading h2{font-size:clamp(38px,4.3vw,62px)}
+  .person-slide{padding-left:31vw;padding-right:5vw;grid-template-columns:minmax(250px,.95fr) minmax(270px,.75fr);gap:3vw}
+  .person-art{width:min(34vw,500px);height:min(67vh,600px)}
+  .person-info{max-width:430px}
+}
+
+/* Telefony a úzké tablety: sekce Lidé má vlastní vertikální kompozici,
+   takže nadpis nikdy neleží přes portrét. */
+@media (max-width:950px){
+  .hero{min-height:100svh;padding:110px 20px 55px}
+  .hero-copy{max-width:100%}
+  .hero-art-bg{right:-24%;top:63%;width:88vw;max-width:520px;opacity:.42}
+  .hero-art-bg img{max-height:430px}
+
+  .priority-sticky,.people-sticky{min-height:100svh}
+  .priority-heading{top:92px;left:20px;right:20px}
+  .priority-heading h2{font-size:clamp(34px,9vw,46px)}
+  .priority-heading p{max-width:600px}
+
+  .people-scroll{height:1700vh}
+  .people-heading{top:91px;left:20px;right:20px;width:auto;z-index:12}
+  .people-heading>span{font-size:9px;margin-bottom:9px}
+  .people-heading h2{font-size:clamp(32px,9.8vw,52px);max-width:600px}
+  .people-heading p{font-size:14px;line-height:1.45;margin-top:13px;max-width:620px}
+
+  /* Portrét je bezpečně pod nadpisem; text má vlastní prostor pod portrétem. */
+  .person-slide{top:0;bottom:0;left:0;right:0;padding:245px 20px 54px;grid-template-columns:1fr;grid-template-rows:minmax(240px,34vh) auto;gap:12px;align-items:start;text-align:center}
+  .person-art{width:min(76vw,390px);height:min(34vh,330px);justify-self:center;align-self:start}
+  .person-info{width:min(100%,540px);max-width:540px;justify-self:center;align-self:start}
+  .person-info .eyebrow{font-size:9px;margin-bottom:9px}
+  .person-info h3{font-size:clamp(39px,10vw,58px);line-height:.88}
+  .person-meta{justify-content:center;flex-wrap:wrap;gap:7px 11px;margin-top:15px;font-size:12px;line-height:1.35}
+  .person-meta i{height:15px}
+  .person-line{margin:16px auto;width:36px}
+  .person-motto{font-size:16px;line-height:1.4;max-width:480px;margin:auto}
+  .people-progress{left:20px;right:20px;bottom:30px}
+  .people-hint{right:20px;bottom:15px}
+}
+
+/* Velmi malé telefony: ještě větší odstup mezi nadpisem, portrétem a textem. */
+@media (max-width:520px){
+  .site-header{padding-left:16px;padding-right:16px}
+  .brand{width:104px}
+  .hero{padding-left:16px;padding-right:16px}
+  .hero h1{font-size:clamp(46px,13.5vw,64px)}
+  .hero-note{font-size:15px;line-height:1.5}
+  .hero-art-bg{right:-31%;top:64%;width:92vw;opacity:.35}
+  .button{padding:13px 16px;font-size:10px}
+  .priority-heading{left:16px;right:16px}
+  .priority-heading h2{font-size:34px}
+  .priority-heading p{font-size:13px}
+  .priority-slide{padding:202px 16px 70px;grid-template-rows:34vh auto;gap:6px}
+  .priority-art{width:min(82vw,330px);height:34vh}
+  .priority-copy h3{font-size:clamp(36px,10.5vw,50px)}
+  .priority-copy>p:last-child{font-size:14px;line-height:1.5;margin-top:14px}
+  .people-heading{top:87px;left:16px;right:16px}
+  .people-heading h2{font-size:clamp(30px,9.4vw,44px)}
+  .people-heading p{font-size:13px;max-width:350px}
+  .person-slide{padding:225px 16px 52px;grid-template-rows:31vh auto;gap:7px}
+  .person-art{width:min(74vw,305px);height:31vh}
+  .person-info h3{font-size:clamp(36px,10vw,49px)}
+  .person-meta{font-size:11.5px}
+  .person-motto{font-size:15px;line-height:1.35}
+  .people-progress{left:16px;right:16px;bottom:27px}
+  .people-hint{display:none}
+}
+
+@media (max-height:700px) and (max-width:950px){
+  .people-heading{top:82px}
+  .people-heading p{margin-top:8px}
+  .person-slide{padding-top:205px;grid-template-rows:29vh auto}
+  .person-art{height:29vh}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-art-bg.visible,.story-art.visible img,.join-art.visible img,.scroll-cue span,.hero-scribble{animation:none!important}
+}
