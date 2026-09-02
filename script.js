@@ -15,9 +15,6 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const isPeople = sectionSelector === '.people-scroll';
   const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
-  // Give every candidate enough scroll space for the complete sequence:
-  // entrance from the right -> portrait pause -> text reveal -> full text pause
-  // -> exit to the left -> text fade. The duration scales with team size.
   if (isPeople) section.style.height = `${Math.max(400, slides.length * 55)}vh`;
   if (progressBar) progressBar.style.width = '100%';
 
@@ -27,77 +24,37 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     const progress = clamp(travel > 0 ? -rect.top / travel : 0);
 
     if (isPeople) {
-      // Jeden kandidát má vlastní scénu. Každý nový portrét přijíždí zprava
-      // a předchozí odjíždí doleva. Text se objeví až po úplném ustálení portrétu.
       const totalScenes = slides.length;
       const scene = progress * totalScenes;
-
       slides.forEach((slide, index) => {
         const copy = slide.querySelector('.person-info');
         const art = slide.querySelector('.person-art');
         const t = scene - index;
-
         if (t < -0.30 || t > 1.80) {
           const off = t < 0 ? 120 : -120;
           slide.style.transform = `translate3d(${off}%,0,0) scale(0.52)`;
           slide.style.opacity = '0';
           slide.style.pointerEvents = 'none';
-          if (copy) {
-            copy.style.opacity = '0';
-            copy.style.clipPath = 'inset(0 0 100% 0)';
-          }
+          if (copy) { copy.style.opacity = '0'; copy.style.clipPath = 'inset(0 0 100% 0)'; }
           return;
         }
-
-        let x = 0;
-        let scale = 1;
-        let slideOpacity = 1;
-        let textProgress = 0;
-        let textOpacity = 0;
-
-        // 0.00–0.30: portrait enters from the RIGHT.
+        let x = 0, scale = 1, slideOpacity = 1, textProgress = 0, textOpacity = 0;
         if (t < 0.30) {
-          const p = clamp(t / 0.30);
-          x = 100 * (1 - p);
-          scale = 0.52 + 0.48 * p;
-          slideOpacity = p;
-        // 0.30–0.56: portrait stands still before any text appears.
+          const p = clamp(t / 0.30); x = 100 * (1 - p); scale = 0.52 + 0.48 * p; slideOpacity = p;
         } else if (t < 0.56) {
-          x = 0;
-          scale = 1;
-        // 0.56–0.94: text reveals while portrait remains completely still.
+          x = 0; scale = 1;
         } else if (t < 0.94) {
-          x = 0;
-          scale = 1;
-          textProgress = clamp((t - 0.56) / 0.38);
-          textOpacity = textProgress;
-        // 0.94–1.20: complete text remains visible and portrait stays still.
+          x = 0; scale = 1; textProgress = clamp((t - 0.56) / 0.38); textOpacity = textProgress;
         } else if (t < 1.20) {
-          x = 0;
-          scale = 1;
-          textProgress = 1;
-          textOpacity = 1;
-        // 1.20–1.62: portrait and its complete text leave together to the LEFT.
+          x = 0; scale = 1; textProgress = 1; textOpacity = 1;
         } else if (t < 1.62) {
-          const p = clamp((t - 1.20) / 0.42);
-          x = -100 * p;
-          scale = 1 - 0.10 * p;
-          textProgress = 1;
-          textOpacity = 1;
-        // 1.62–1.80: after the portrait is gone, its text fades out slowly.
+          const p = clamp((t - 1.20) / 0.42); x = -100 * p; scale = 1 - 0.10 * p; textProgress = 1; textOpacity = 1;
         } else {
-          const p = clamp((t - 1.62) / 0.18);
-          x = -100;
-          scale = 0.90;
-          textProgress = 1;
-          textOpacity = 1 - p;
-          slideOpacity = 1 - p * 0.30;
+          const p = clamp((t - 1.62) / 0.18); x = -100; scale = 0.90; textProgress = 1; textOpacity = 1 - p; slideOpacity = 1 - p * 0.30;
         }
-
         slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
         slide.style.opacity = String(slideOpacity);
         slide.style.pointerEvents = x === 0 ? 'auto' : 'none';
-
         if (copy) {
           copy.style.opacity = String(textOpacity);
           copy.style.transform = `translate3d(0,${(1 - textProgress) * 26}px,0)`;
@@ -120,19 +77,13 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
         slide.style.transform = `translate3d(${x}%,0,0) scale(${scale})`;
         slide.style.opacity = String(opacity);
         slide.style.pointerEvents = absDistance < 0.5 ? 'auto' : 'none';
-        if (copy) {
-          copy.style.opacity = String(Math.max(0, 1 - normalized * 0.9));
-          copy.style.transform = 'translate3d(0,0,0)';
-          copy.style.clipPath = 'none';
-        }
+        if (copy) { copy.style.opacity = String(Math.max(0, 1 - normalized * 0.9)); copy.style.transform = 'translate3d(0,0,0)'; copy.style.clipPath = 'none'; }
         if (art) art.style.transform = `scale(${0.94 + (1 - normalized) * 0.06})`;
       });
     }
-
     if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
     section.classList.toggle('is-finished', progress > 0.985);
   }
-
   update();
   return update;
 }
@@ -140,14 +91,9 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
 let ticking = false;
 const updatePriority = setupScrollCarousel('.priority-scroll', '.priority-slide', '.priority-progress span', 'rtl');
 const updatePeople = setupScrollCarousel('.people-scroll', '.person-slide', '.people-progress span', 'rtl');
-
 function onScroll() {
   if (ticking) return;
-  window.requestAnimationFrame(() => {
-    updatePriority?.();
-    updatePeople?.();
-    ticking = false;
-  });
+  window.requestAnimationFrame(() => { updatePriority?.(); updatePeople?.(); ticking = false; });
   ticking = true;
 }
 window.addEventListener('scroll', onScroll, { passive: true });
@@ -164,3 +110,12 @@ nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () =
   menuButton?.setAttribute('aria-expanded', 'false');
   nav?.classList.remove('mobile-open');
 }));
+
+// Načtení samostatné responzivní vrstvy, aby šla bezpečně ladit bez zásahu do hlavního CSS.
+if (!document.querySelector('link[data-responsive-css]')) {
+  const responsiveCss = document.createElement('link');
+  responsiveCss.rel = 'stylesheet';
+  responsiveCss.href = 'responsive.css';
+  responsiveCss.dataset.responsiveCss = 'true';
+  document.head.appendChild(responsiveCss);
+}
