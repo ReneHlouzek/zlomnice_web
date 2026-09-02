@@ -111,6 +111,48 @@ nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () =
   nav?.classList.remove('mobile-open');
 }));
 
+// Návrat na začátek: logo i šipka v navigaci používají stejnou spolehlivou funkci.
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const brand = document.querySelector('.brand');
+brand?.addEventListener('click', (event) => {
+  event.preventDefault();
+  scrollToTop();
+});
+
+// Šipka nahoru za položkou Kontakt. Vytvoří se záměrně přes JS,
+// takže není nutné zasahovat do HTML navigace a zůstává funkční i na mobilu.
+if (nav && !nav.querySelector('.back-to-top')) {
+  const backToTop = document.createElement('a');
+  backToTop.className = 'back-to-top';
+  backToTop.href = '#top';
+  backToTop.setAttribute('aria-label', 'Zpět nahoru');
+  backToTop.setAttribute('title', 'Zpět nahoru');
+  backToTop.innerHTML = '<span aria-hidden="true">↑</span>';
+  nav.appendChild(backToTop);
+  backToTop.addEventListener('click', (event) => {
+    event.preventDefault();
+    scrollToTop();
+    menuButton?.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('mobile-open');
+  });
+}
+
+// Styl šipky je vložen zde, aby byla změna izolovaná a nemusela se přepisovat celá styles.css.
+if (!document.querySelector('#back-to-top-style')) {
+  const style = document.createElement('style');
+  style.id = 'back-to-top-style';
+  style.textContent = `
+    .desktop-nav .back-to-top{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:2px;margin-top:-1px;border:1px solid #111;border-radius:50%;font-size:20px;line-height:1;letter-spacing:0;transition:background .2s,color .2s,transform .2s}
+    .desktop-nav .back-to-top:after{display:none}
+    .desktop-nav .back-to-top:hover{background:var(--yellow);transform:translateY(-2px)}
+    @media(max-width:950px){.desktop-nav .back-to-top{width:34px;height:34px;margin:8px 0 2px;font-size:20px}}
+  `;
+  document.head.appendChild(style);
+}
+
 // Načtení samostatné responzivní vrstvy, aby šla bezpečně ladit bez zásahu do hlavního CSS.
 if (!document.querySelector('link[data-responsive-css]')) {
   const responsiveCss = document.createElement('link');
