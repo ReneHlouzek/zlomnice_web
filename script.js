@@ -15,16 +15,33 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const isPeople = sectionSelector === '.people-scroll';
   const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
-  // Kandidátům dáváme ještě dvojnásobně delší scrollovací prostor,
-  // aby byl pohyb při jednotlivých krocích kolečka/touchpadu maximálně jemný.
   if (isPeople) {
     const vhPerCandidate = window.innerWidth <= 950 ? 400 : 360;
     section.style.height = `${Math.max(2400, slides.length * vhPerCandidate)}vh`;
   }
-  if (sectionSelector === '.priority-scroll') {
-    section.style.height = '1200vh';
-  }
+  if (sectionSelector === '.priority-scroll') section.style.height = '1200vh';
   if (progressBar) progressBar.style.width = '100%';
+
+  function fitCandidateName(copy) {
+    if (!copy) return;
+    const name = copy.querySelector('h3');
+    if (!name) return;
+    name.style.fontSize = '';
+    name.style.whiteSpace = 'nowrap';
+    const maxSize = parseFloat(getComputedStyle(name).fontSize);
+    const minSize = window.innerWidth <= 520 ? 25 : window.innerWidth <= 950 ? 28 : 38;
+    const available = Math.max(1, copy.clientWidth);
+    let size = maxSize;
+    while (name.scrollWidth > available && size > minSize) {
+      size -= 0.5;
+      name.style.fontSize = `${size}px`;
+    }
+  }
+
+  function fitAllCandidateNames() {
+    if (!isPeople) return;
+    slides.forEach(slide => fitCandidateName(slide.querySelector('.person-info')));
+  }
 
   function update() {
     const rect = section.getBoundingClientRect();
@@ -92,6 +109,7 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
     if (progressBar) progressBar.style.transform = `scaleX(${progress})`;
     section.classList.toggle('is-finished', progress > 0.985);
   }
+  fitAllCandidateNames();
   update();
   return update;
 }
@@ -119,19 +137,10 @@ nav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () =
   nav?.classList.remove('mobile-open');
 }));
 
-// Návrat na začátek: logo i šipka v navigaci používají stejnou spolehlivou funkci.
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 const brand = document.querySelector('.brand');
-brand?.addEventListener('click', (event) => {
-  event.preventDefault();
-  scrollToTop();
-});
+brand?.addEventListener('click', (event) => { event.preventDefault(); scrollToTop(); });
 
-// Šipka nahoru za položkou Kontakt. Vytvoří se záměrně přes JS,
-// takže není nutné zasahovat do HTML navigace a zůstává funkční i na mobilu.
 if (nav && !nav.querySelector('.back-to-top')) {
   const backToTop = document.createElement('a');
   backToTop.className = 'back-to-top';
@@ -141,14 +150,10 @@ if (nav && !nav.querySelector('.back-to-top')) {
   backToTop.innerHTML = '<span aria-hidden="true">↑</span>';
   nav.appendChild(backToTop);
   backToTop.addEventListener('click', (event) => {
-    event.preventDefault();
-    scrollToTop();
-    menuButton?.setAttribute('aria-expanded', 'false');
-    nav.classList.remove('mobile-open');
+    event.preventDefault(); scrollToTop(); menuButton?.setAttribute('aria-expanded', 'false'); nav.classList.remove('mobile-open');
   });
 }
 
-// Styl šipky je vložen zde, aby byla změna izolovaná a nemusela se přepisovat celá styles.css.
 if (!document.querySelector('#back-to-top-style')) {
   const style = document.createElement('style');
   style.id = 'back-to-top-style';
@@ -161,7 +166,6 @@ if (!document.querySelector('#back-to-top-style')) {
   document.head.appendChild(style);
 }
 
-// Načtení samostatné responzivní vrstvy, aby šla bezpečně ladit bez zásahu do hlavního CSS.
 if (!document.querySelector('link[data-responsive-css]')) {
   const responsiveCss = document.createElement('link');
   responsiveCss.rel = 'stylesheet';
