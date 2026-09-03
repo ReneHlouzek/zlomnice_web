@@ -15,7 +15,15 @@ function setupScrollCarousel(sectionSelector, slideSelector, progressSelector, d
   const isPeople = sectionSelector === '.people-scroll';
   const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
 
-  if (isPeople) section.style.height = `${Math.max(400, slides.length * 55)}vh`;
+  // Delší scrollovací prostor = menší posun animace při každém kroku kolečka.
+  // U kandidátů zároveň přizpůsobíme délku i mobilům, kde je ovládání kolečkem/touchpadem citlivější.
+  if (isPeople) {
+    const vhPerCandidate = window.innerWidth <= 950 ? 100 : 90;
+    section.style.height = `${Math.max(600, slides.length * vhPerCandidate)}vh`;
+  }
+  if (sectionSelector === '.priority-scroll') {
+    section.style.height = '1200vh';
+  }
   if (progressBar) progressBar.style.width = '100%';
 
   function update() {
