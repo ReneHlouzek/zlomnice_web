@@ -177,15 +177,20 @@ if (!document.querySelector('link[data-responsive-css]')) {
 /*
  * ISOLATED PROGRAM BOOK
  * Everything is created at runtime and scoped to #program-book-modal.
- * The existing page markup/layout is untouched. Page images can later be
- * added to PROGRAM_BOOK_PAGES without changing the rest of the website.
+ * The existing page markup/layout is untouched. Replace the empty page slots
+ * below with the final program page images when they are ready.
  */
 (() => {
   const programLink = document.querySelector('#program .text-link');
   if (!programLink || document.querySelector('#program-book-modal')) return;
 
   const PROGRAM_BOOK_PAGES = [
-    { src: 'assets/program_lomnice.png', alt: 'Obálka programu Z:LOMNICE' }
+    { src: 'assets/program_lomnice.png', alt: 'Obálka programu Z:LOMNICE' },
+    { placeholder: 'Sem přijde titulní vnitřní strana programu.' },
+    { placeholder: 'Sem přijde další strana programu.' },
+    { placeholder: 'Sem přijde další strana programu.' },
+    { placeholder: 'Sem přijde další strana programu.' },
+    { placeholder: 'Sem přijde další strana programu.' }
   ];
 
   const style = document.createElement('style');
@@ -262,14 +267,17 @@ if (!document.querySelector('link[data-responsive-css]')) {
   function pageElement(index, side) {
     const page = document.createElement('div');
     page.className = `program-book-page ${side}`;
-    if (PROGRAM_BOOK_PAGES[index]) {
+    const data = PROGRAM_BOOK_PAGES[index];
+    if (data?.src) {
       const img = document.createElement('img');
-      img.src = PROGRAM_BOOK_PAGES[index].src;
-      img.alt = PROGRAM_BOOK_PAGES[index].alt;
+      img.src = data.src;
+      img.alt = data.alt || 'Strana programu';
       page.appendChild(img);
     } else {
       page.classList.add('empty');
-      page.innerHTML = '<span>Stránka programu bude doplněna.</span>';
+      const text = document.createElement('span');
+      text.textContent = data?.placeholder || 'Stránka programu bude doplněna.';
+      page.appendChild(text);
     }
     return page;
   }
@@ -279,14 +287,14 @@ if (!document.querySelector('link[data-responsive-css]')) {
     const leftIndex = current % 2 === 0 ? current : current - 1;
     const rightIndex = leftIndex + 1;
     book.appendChild(pageElement(Math.max(0, leftIndex), 'left'));
-    book.appendChild(pageElement(rightIndex, 'right'));
-    count.textContent = `${Math.min(current + 1, PROGRAM_BOOK_PAGES.length)} / ${Math.max(1, PROGRAM_BOOK_PAGES.length)}`;
+    if (rightIndex < PROGRAM_BOOK_PAGES.length) book.appendChild(pageElement(rightIndex, 'right'));
+    count.textContent = `${Math.min(current + 1, PROGRAM_BOOK_PAGES.length)} / ${PROGRAM_BOOK_PAGES.length}`;
     prev.disabled = current <= 0;
     next.disabled = current >= PROGRAM_BOOK_PAGES.length - 1;
   }
 
   function turn(direction) {
-    if (busy || PROGRAM_BOOK_PAGES.length < 2) return;
+    if (busy) return;
     const target = direction === 1 ? Math.min(current + 1, PROGRAM_BOOK_PAGES.length - 1) : Math.max(current - 1, 0);
     if (target === current) return;
     busy = true;
