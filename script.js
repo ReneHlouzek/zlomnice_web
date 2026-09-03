@@ -1,85 +1,17 @@
 const revealItems = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-    else entry.target.classList.remove('visible');
-  });
-}, { threshold: 0.14 });
+const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('visible'); else entry.target.classList.remove('visible'); }); }, { threshold: 0.14 });
 revealItems.forEach((item) => observer.observe(item));
-
 function setupScrollCarousel(sectionSelector, slideSelector, progressSelector) {
-  const section = document.querySelector(sectionSelector);
-  const slides = [...document.querySelectorAll(slideSelector)];
-  const progressBar = document.querySelector(progressSelector);
-  if (!section || !slides.length) return;
-  const isPeople = sectionSelector === '.people-scroll';
-  const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
-  if (isPeople) {
-    const vhPerCandidate = window.innerWidth <= 950 ? 400 : 360;
-    section.style.height = `${Math.max(2400, slides.length * vhPerCandidate)}vh`;
-  }
-  if (sectionSelector === '.priority-scroll') section.style.height = '1200vh';
-  if (progressBar) progressBar.style.width = '100%';
-  function fitCandidateName(copy) {
-    if (!copy) return;
-    const name = copy.querySelector('h3');
-    if (!name) return;
-    name.style.fontSize = '';
-    name.style.whiteSpace = 'nowrap';
-    const maxSize = parseFloat(getComputedStyle(name).fontSize);
-    const minSize = window.innerWidth <= 520 ? 25 : window.innerWidth <= 950 ? 28 : 38;
-    const available = Math.max(1, copy.clientWidth);
-    let size = maxSize;
-    while (name.scrollWidth > available && size > minSize) { size -= 0.5; name.style.fontSize = `${size}px`; }
-  }
-  function update() {
-    const rect = section.getBoundingClientRect();
-    const travel = section.offsetHeight - window.innerHeight;
-    const progress = clamp(travel > 0 ? -rect.top / travel : 0);
-    if (isPeople) {
-      const scene = progress * slides.length;
-      slides.forEach((slide, index) => {
-        const copy = slide.querySelector('.person-info');
-        const art = slide.querySelector('.person-art');
-        fitCandidateName(copy);
-        const t = scene - index;
-        if (t < -0.30 || t > 1.80) {
-          const off = t < 0 ? 120 : -120;
-          slide.style.transform = `translate3d(${off}%,0,0) scale(0.52)`;
-          slide.style.opacity = '0'; slide.style.pointerEvents = 'none';
-          if (copy) { copy.style.opacity = '0'; copy.style.clipPath = 'inset(0 0 100% 0)'; }
-          return;
-        }
-        let x=0,scale=1,slideOpacity=1,textProgress=0,textOpacity=0;
-        if(t<0.30){const p=clamp(t/0.30);x=100*(1-p);scale=0.52+0.48*p;slideOpacity=p}
-        else if(t<0.56){x=0;scale=1}
-        else if(t<0.94){x=0;scale=1;textProgress=clamp((t-0.56)/0.38);textOpacity=textProgress}
-        else if(t<1.20){x=0;scale=1;textProgress=1;textOpacity=1}
-        else if(t<1.62){const p=clamp((t-1.20)/0.42);x=-100*p;scale=1-0.10*p;textProgress=1;textOpacity=1}
-        else {const p=clamp((t-1.62)/0.18);x=-100;scale=0.90;textProgress=1;textOpacity=1-p;slideOpacity=1-p*0.30}
-        slide.style.transform=`translate3d(${x}%,0,0) scale(${scale})`;slide.style.opacity=String(slideOpacity);slide.style.pointerEvents=x===0?'auto':'none';
-        if(copy){copy.style.opacity=String(textOpacity);copy.style.transform=`translate3d(0,${(1-textProgress)*26}px,0)`;copy.style.clipPath=`inset(0 0 ${(1-textProgress)*100}% 0)`}
-        if(art) art.style.transform='scale(1)';
-      });
-    } else {
-      const carouselLength=Math.max(0,slides.length-1),position=progress*carouselLength;
-      slides.forEach((slide,index)=>{const distance=index-position,absDistance=Math.abs(distance),normalized=Math.min(absDistance,1),scale=0.68+(1-normalized)*0.32,opacity=Math.max(0,1-normalized*0.72),x=distance*100,copy=slide.querySelector('.priority-copy'),art=slide.querySelector('.priority-art');slide.style.transform=`translate3d(${x}%,0,0) scale(${scale})`;slide.style.opacity=String(opacity);slide.style.pointerEvents=absDistance<0.5?'auto':'none';if(copy){copy.style.opacity=String(Math.max(0,1-normalized*0.9));copy.style.transform='translate3d(0,0,0)';copy.style.clipPath='none'}if(art)art.style.transform=`scale(${0.94+(1-normalized)*0.06})`});
-    }
-    if(progressBar)progressBar.style.transform=`scaleX(${progress})`;
-    section.classList.toggle('is-finished',progress>0.985);
-  }
-  update(); return update;
-}
-let ticking=false;
-const updatePriority=setupScrollCarousel('.priority-scroll','.priority-slide','.priority-progress span');
-const updatePeople=setupScrollCarousel('.people-scroll','.person-slide','.people-progress span');
-function onScroll(){if(ticking)return;window.requestAnimationFrame(()=>{updatePriority?.();updatePeople?.();ticking=false});ticking=true}
-window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll);
-const menuButton=document.querySelector('.menu-toggle'),nav=document.querySelector('.desktop-nav');
-menuButton?.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')==='true';menuButton.setAttribute('aria-expanded',String(!open));nav?.classList.toggle('mobile-open',!open)});
-nav?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{menuButton?.setAttribute('aria-expanded','false');nav?.classList.remove('mobile-open')}));
-function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}
-const brand=document.querySelector('.brand');brand?.addEventListener('click',event=>{event.preventDefault();scrollToTop()});
-if(nav&&!nav.querySelector('.back-to-top')){const backToTop=document.createElement('a');backToTop.className='back-to-top';backToTop.href='#top';backToTop.setAttribute('aria-label','Zpět nahoru');backToTop.setAttribute('title','Zpět nahoru');backToTop.innerHTML='<span aria-hidden="true">↑</span>';nav.appendChild(backToTop);backToTop.addEventListener('click',event=>{event.preventDefault();scrollToTop();menuButton?.setAttribute('aria-expanded','false');nav.classList.remove('mobile-open')})}
-if(!document.querySelector('#back-to-top-style')){const style=document.createElement('style');style.id='back-to-top-style';style.textContent=`.desktop-nav .back-to-top{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:2px;margin-top:-1px;border:1px solid #111;border-radius:50%;font-size:20px;line-height:1;letter-spacing:0;transition:background .2s,color .2s,transform .2s}.desktop-nav .back-to-top:after{display:none}.desktop-nav .back-to-top:hover{background:var(--yellow);transform:translateY(-2px)}@media(max-width:950px){.desktop-nav .back-to-top{width:34px;height:34px;margin:8px 0 2px;font-size:20px}}`;document.head.appendChild(style)}
-if(!document.querySelector('link[data-responsive-css]')){const responsiveCss=document.createElement('link');responsiveCss.rel='stylesheet';responsiveCss.href='responsive.css';responsiveCss.dataset.responsiveCss='true';document.head.appendChild(responsiveCss)}
+  const section=document.querySelector(sectionSelector), slides=[...document.querySelectorAll(slideSelector)], progressBar=document.querySelector(progressSelector); if(!section||!slides.length)return;
+  const isPeople=sectionSelector==='.people-scroll', clamp=(v,min=0,max=1)=>Math.max(min,Math.min(max,v));
+  if(isPeople)section.style.height=`${Math.max(2400,slides.length*(window.innerWidth<=950?400:360))}vh`; if(sectionSelector==='.priority-scroll')section.style.height='1200vh'; if(progressBar)progressBar.style.width='100%';
+  function fit(copy){if(!copy)return;const name=copy.querySelector('h3');if(!name)return;name.style.fontSize='';name.style.whiteSpace='nowrap';let size=parseFloat(getComputedStyle(name).fontSize),min=window.innerWidth<=520?25:window.innerWidth<=950?28:38,available=Math.max(1,copy.clientWidth);while(name.scrollWidth>available&&size>min){size-=.5;name.style.fontSize=`${size}px`}}
+  function update(){const rect=section.getBoundingClientRect(),travel=section.offsetHeight-window.innerHeight,progress=clamp(travel>0?-rect.top/travel:0);if(isPeople){const scene=progress*slides.length;slides.forEach((slide,index)=>{const copy=slide.querySelector('.person-info'),art=slide.querySelector('.person-art');fit(copy);const t=scene-index;if(t<-.3||t>1.8){const off=t<0?120:-120;slide.style.transform=`translate3d(${off}%,0,0) scale(.52)`;slide.style.opacity='0';slide.style.pointerEvents='none';if(copy){copy.style.opacity='0';copy.style.clipPath='inset(0 0 100% 0)'}return}let x=0,scale=1,so=1,tp=0,to=0;if(t<.3){const p=clamp(t/.3);x=100*(1-p);scale=.52+.48*p;so=p}else if(t<.56){ }else if(t<.94){tp=clamp((t-.56)/.38);to=tp}else if(t<1.2){tp=1;to=1}else if(t<1.62){const p=clamp((t-1.2)/.42);x=-100*p;scale=1-.1*p;tp=1;to=1}else{const p=clamp((t-1.62)/.18);x=-100;scale=.9;tp=1;to=1-p;so=1-p*.3}slide.style.transform=`translate3d(${x}%,0,0) scale(${scale})`;slide.style.opacity=String(so);slide.style.pointerEvents=x===0?'auto':'none';if(copy){copy.style.opacity=String(to);copy.style.transform=`translate3d(0,${(1-tp)*26}px,0)`;copy.style.clipPath=`inset(0 0 ${(1-tp)*100}% 0)`}if(art)art.style.transform='scale(1)'})}else{const len=Math.max(0,slides.length-1),pos=progress*len;slides.forEach((slide,index)=>{const d=index-pos,a=Math.abs(d),n=Math.min(a,1),scale=.68+(1-n)*.32,opacity=Math.max(0,1-n*.72),x=d*100,copy=slide.querySelector('.priority-copy'),art=slide.querySelector('.priority-art');slide.style.transform=`translate3d(${x}%,0,0) scale(${scale})`;slide.style.opacity=String(opacity);slide.style.pointerEvents=a<.5?'auto':'none';if(copy){copy.style.opacity=String(Math.max(0,1-n*.9));copy.style.transform='translate3d(0,0,0)';copy.style.clipPath='none'}if(art)art.style.transform=`scale(${.94+(1-n)*.06})`})}if(progressBar)progressBar.style.transform=`scaleX(${progress})`;section.classList.toggle('is-finished',progress>.985)}update();return update}
+let ticking=false;const updatePriority=setupScrollCarousel('.priority-scroll','.priority-slide','.priority-progress span'),updatePeople=setupScrollCarousel('.people-scroll','.person-slide','.people-progress span');function onScroll(){if(ticking)return;requestAnimationFrame(()=>{updatePriority?.();updatePeople?.();ticking=false});ticking=true}window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',onScroll);
+const menuButton=document.querySelector('.menu-toggle'),nav=document.querySelector('.desktop-nav');menuButton?.addEventListener('click',()=>{const open=menuButton.getAttribute('aria-expanded')==='true';menuButton.setAttribute('aria-expanded',String(!open));nav?.classList.toggle('mobile-open',!open)});nav?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{menuButton?.setAttribute('aria-expanded','false');nav?.classList.remove('mobile-open')}));
+function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}document.querySelector('.brand')?.addEventListener('click',e=>{e.preventDefault();scrollToTop()});if(nav&&!nav.querySelector('.back-to-top')){const a=document.createElement('a');a.className='back-to-top';a.href='#top';a.setAttribute('aria-label','Zpět nahoru');a.innerHTML='<span aria-hidden="true">↑</span>';nav.appendChild(a);a.addEventListener('click',e=>{e.preventDefault();scrollToTop();menuButton?.setAttribute('aria-expanded','false');nav.classList.remove('mobile-open')})}
+if(!document.querySelector('#back-to-top-style')){const s=document.createElement('style');s.id='back-to-top-style';s.textContent='.desktop-nav .back-to-top{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:2px;border:1px solid #111;border-radius:50%;font-size:20px;line-height:1;letter-spacing:0}.desktop-nav .back-to-top:hover{background:var(--yellow)}';document.head.appendChild(s)}
+if(!document.querySelector('link[data-responsive-css]')){const r=document.createElement('link');r.rel='stylesheet';r.href='responsive.css';r.dataset.responsiveCss='true';document.head.appendChild(r)}
+
+// The program book is intentionally loaded separately so it cannot interfere with the main page logic.
+if(!document.querySelector('script[data-program-book]')){const s=document.createElement('script');s.src='program-book.js';s.dataset.programBook='true';document.body.appendChild(s)}
