@@ -14,7 +14,7 @@
   .person-slide{padding-left:clamp(430px,32vw,600px);padding-right:clamp(90px,8vw,150px);gap:clamp(45px,5vw,100px)}
   .person-art{width:min(37vw,660px);height:min(72vh,730px)}
   .person-info{max-width:580px}
-  .person-info h3{font-size:clamp(58px,4.5vw,92px)}
+  .person-info h3{font-size:clamp(58px,4.5vw,92px);white-space:nowrap}
   .person-motto{font-size:22px;max-width:520px}
   .people-progress{left:clamp(430px,32vw,600px);right:clamp(90px,8vw,150px)}
 }
@@ -32,6 +32,7 @@
   .person-slide{padding-left:31vw;padding-right:5vw;grid-template-columns:minmax(250px,.95fr) minmax(270px,.75fr);gap:3vw}
   .person-art{width:min(34vw,500px);height:min(67vh,600px)}
   .person-info{max-width:430px}
+  .person-info h3{white-space:nowrap}
 }
 
 /* Telefony a úzké tablety: sekce Lidé má vlastní vertikální kompozici,
@@ -58,7 +59,7 @@
   .person-art{width:min(76vw,390px);height:min(34vh,330px);justify-self:center;align-self:start}
   .person-info{width:min(100%,540px);max-width:540px;justify-self:center;align-self:start}
   .person-info .eyebrow{font-size:9px;margin-bottom:9px}
-  .person-info h3{font-size:clamp(39px,10vw,58px);line-height:.88}
+  .person-info h3{font-size:clamp(39px,10vw,58px);line-height:.88;white-space:nowrap;overflow:visible}
   .person-meta{justify-content:center;flex-wrap:wrap;gap:7px 11px;margin-top:15px;font-size:12px;line-height:1.35}
   .person-meta i{height:15px}
   .person-line{margin:16px auto;width:36px}
@@ -67,7 +68,7 @@
   .people-hint{right:20px;bottom:15px}
 }
 
-/* Velmi malé telefony: ještě větší odstup mezi nadpisem, portrétem a textem. */
+/* Velmi malé telefony: dlouhá jména se nesmí zalomit; font se zmenší podle šířky. */
 @media (max-width:520px){
   .site-header{padding-left:16px;padding-right:16px}
   .brand{width:104px}
@@ -88,7 +89,8 @@
   .people-heading p{font-size:13px;max-width:350px}
   .person-slide{padding:225px 16px 52px;grid-template-rows:31vh auto;gap:7px}
   .person-art{width:min(74vw,305px);height:31vh}
-  .person-info h3{font-size:clamp(36px,10vw,49px)}
+  .person-info{width:100%;max-width:100%}
+  .person-info h3{font-size:clamp(36px,10vw,49px);white-space:nowrap;overflow:visible}
   .person-meta{font-size:11.5px}
   .person-motto{font-size:15px;line-height:1.35}
   .people-progress{left:16px;right:16px;bottom:27px}
@@ -100,6 +102,16 @@
   .people-heading p{margin-top:8px}
   .person-slide{padding-top:205px;grid-template-rows:29vh auto}
   .person-art{height:29vh}
+}
+
+/* Dlouhá jména kandidátů: nikdy nerozdělovat příjmení mezi řádky. */
+.person-info h3{white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important;hyphens:none!important}
+
+@media (max-width:950px){
+  .person-info h3{font-size:clamp(34px,9vw,54px)!important}
+}
+@media (max-width:520px){
+  .person-info h3{font-size:clamp(30px,8.2vw,45px)!important}
 }
 
 @media (prefers-reduced-motion:reduce){
