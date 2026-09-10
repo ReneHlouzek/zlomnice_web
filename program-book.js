@@ -14,9 +14,25 @@
       { blank: true, label: 'Zadní přebal' }
     ];
 
+    // Tlačítko pro stažení kompletního programu v PDF.
+    if (!document.querySelector('#program-pdf-download')) {
+      const download = document.createElement('a');
+      download.id = 'program-pdf-download';
+      download.className = 'button filled program-pdf-download';
+      download.href = 'assets/Program_Zlomnice.pdf';
+      download.download = 'Program_ZLOMNICE.pdf';
+      download.target = '_blank';
+      download.rel = 'noopener';
+      download.innerHTML = 'STÁHNOUT PROGRAM PDF <span>↓</span>';
+      trigger.insertAdjacentElement('afterend', download);
+    }
+
     const style = document.createElement('style');
     style.id = 'program-book-style';
     style.textContent = `
+      #program-pdf-download{display:inline-flex;margin-left:14px;align-items:center;gap:10px}
+      #program-pdf-download span{font-size:18px;line-height:1}
+      @media(max-width:700px){#program-pdf-download{margin:12px 0 0;}}
       #program-book-modal{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(15,14,12,.88);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease}
       #program-book-modal.open{opacity:1;visibility:visible;pointer-events:auto}
       .pb-shell{position:relative;width:min(1240px,96vw);height:min(900px,94vh);display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -26,8 +42,8 @@
       .pb-book{position:relative;width:min(92vw,1200px);aspect-ratio:2.826 / 1;max-height:72vh;transform-style:preserve-3d;filter:drop-shadow(0 28px 34px rgba(0,0,0,.46))}
       .pb-page{position:absolute;top:0;width:50%;height:100%;overflow:hidden;background:#f7f0df;backface-visibility:hidden;transform-style:preserve-3d;will-change:transform;box-shadow:inset 0 0 28px rgba(60,45,25,.10)}
       .pb-page.left{left:0;transform-origin:right center;border-radius:10px 2px 2px 10px}
-      .pb-page.right{right:0;transform-origin:left center;border-radius:2px 10px 10px 2px}
-      .pb-page.cover{right:0;left:auto;transform-origin:left center;border-radius:2px 10px 10px 2px}
+      .pb-page.right{right:0;transform-origin:left center;border-radius:2px 10px 2px 10px}
+      .pb-page.cover{right:0;left:auto;transform-origin:left center;border-radius:2px 10px 2px 10px}
       .pb-page.back{left:0;right:auto;transform-origin:right center;border-radius:10px 2px 2px 10px}
       .pb-page.blank{background:#f7f0df}
       .pb-page img{width:100%;height:100%;display:block;object-fit:cover}
