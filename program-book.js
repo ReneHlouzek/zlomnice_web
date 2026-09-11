@@ -3,188 +3,40 @@
     const trigger = document.querySelector('#program .text-link') || document.querySelector('#program a[href="#kontakt"]');
     if (!trigger || document.getElementById('program-book-modal')) return;
 
-    // 26 hotových stran: 1 = přední přebal, 26 = zadní přebal.
     const pages = Array.from({length:26},(_,i)=>({
       src:`assets/program_jpg/${i+1}.jpg`,
       alt:`Program Z:LOMNICE – strana ${i+1}`
     }));
 
     if (!document.querySelector('#program-pdf-download')) {
-      const download=document.createElement('a');
-      download.id='program-pdf-download';
-      download.className='button filled program-pdf-download';
-      download.href='assets/Program_Zlomnice.pdf';
-      download.download='Program_ZLOMNICE.pdf';
-      download.target='_blank';
-      download.rel='noopener';
-      download.innerHTML='STÁHNOUT PROGRAM PDF <span>↓</span>';
-      trigger.insertAdjacentElement('afterend',download);
+      const download=document.createElement('a'); download.id='program-pdf-download'; download.className='button filled program-pdf-download'; download.href='assets/Program_Zlomnice.pdf'; download.download='Program_ZLOMNICE.pdf'; download.target='_blank'; download.rel='noopener'; download.innerHTML='STÁHNOUT PROGRAM PDF <span>↓</span>'; trigger.insertAdjacentElement('afterend',download);
     }
 
-    const style=document.createElement('style');
-    style.id='program-book-style';
-    style.textContent=`
-      #program-pdf-download{display:inline-flex;margin-left:14px;align-items:center;gap:10px}
-      #program-pdf-download span{font-size:18px;line-height:1}
-      @media(max-width:700px){#program-pdf-download{margin:12px 0 0}}
-      #program-book-modal{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:4px;background:rgba(15,14,12,.88);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
-      #program-book-modal.open{opacity:1;visibility:visible;pointer-events:auto}
-      .pb-shell{position:relative;width:100%;max-width:1920px;height:99vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-      .pb-close{position:absolute;right:4px;top:4px;z-index:50;width:44px;height:44px;border:1px solid rgba(255,255,255,.85);border-radius:50%;background:rgba(20,20,20,.65);color:#fff;font-size:26px;line-height:1;cursor:pointer}
-      .pb-stage{width:100%;height:calc(100vh - 105px);display:flex;align-items:center;justify-content:center;perspective:2800px;perspective-origin:center}
-      .pb-book{position:relative;width:min(99vw,1900px);aspect-ratio:2.826 / 1;max-height:90vh;transform-style:preserve-3d;transform-origin:center;filter:drop-shadow(0 30px 38px rgba(0,0,0,.48));isolation:isolate}
-      .pb-page{position:absolute;top:0;width:50%;height:100%;overflow:hidden;background:#f7f0df;backface-visibility:hidden;transform-style:preserve-3d;will-change:transform;box-shadow:inset 0 0 28px rgba(60,45,25,.10)}
-      .pb-page.left{left:0;transform-origin:right center;border-radius:10px 2px 2px 10px}
-      .pb-page.right{right:0;transform-origin:left center;border-radius:2px 10px 10px 2px}
-      .pb-page.cover{right:0;left:auto;transform-origin:left center;border-radius:2px 10px 10px 2px}
-      .pb-page.back{left:0;right:auto;transform-origin:right center;border-radius:10px 2px 2px 10px}
-      .pb-page img{width:100%;height:100%;display:block;object-fit:contain}
-      .pb-page.turn{z-index:20;transition:transform .88s cubic-bezier(.22,.61,.36,1)}
-      .pb-page.turn-next{transform:rotateY(-180deg)}
-      .pb-page.turn-prev{transform:rotateY(180deg)}
-      .pb-page.turn::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .88s ease;background:linear-gradient(90deg,rgba(15,10,5,.38),rgba(255,255,255,.20) 38%,transparent 68%,rgba(15,10,5,.16))}
-      .pb-page.turning::after{opacity:.72}
-      .pb-under-page{z-index:5}
-      .pb-under-page.left{left:0}
-      .pb-under-page.right{right:0}
-      .pb-under-page.back{left:0;right:auto}
-      .pb-under-page::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(20,14,7,.04),transparent 45%,rgba(20,14,7,.12))}
-      .pb-nav{display:flex;align-items:center;gap:12px;margin-top:6px;color:#fff}
-      .pb-btn{width:52px;height:42px;border:1px solid rgba(255,255,255,.85);border-radius:22px;background:rgba(255,255,255,.07);color:#fff;cursor:pointer;font-size:18px;transition:background .15s,transform .15s}
-      .pb-btn:hover:not(:disabled){background:rgba(255,255,255,.16);transform:translateY(-1px)}
-      .pb-btn:disabled{opacity:.28;cursor:default}
-      .pb-count{min-width:130px;text-align:center;font:600 12px/1 sans-serif;letter-spacing:.1em}
-      .pb-hint{margin-top:4px;color:rgba(255,255,255,.72);font:500 10px/1.4 sans-serif;text-transform:uppercase;letter-spacing:.08em}
-      @media(max-width:700px){
-        #program-book-modal{padding:6px}
-        .pb-shell{width:100%;height:100%}
-        .pb-stage{width:100%;height:calc(100vh - 150px);perspective:1400px}
-        .pb-book{width:min(96vw,calc((100vh - 165px) * 11.69 / 8.27));aspect-ratio:11.69 / 8.27;max-height:none}
-        .pb-page{width:100%!important;left:0!important;right:auto!important;border-radius:9px!important;transform-origin:center!important}
-        .pb-page.turn{transition-duration:.66s}
-        .pb-nav{margin-top:10px}
-        .pb-hint{font-size:9px;max-width:300px;text-align:center}
-      }
+    const style=document.createElement('style'); style.id='program-book-style'; style.textContent=`
+      #program-pdf-download{display:inline-flex;margin-left:14px;align-items:center;gap:10px}#program-pdf-download span{font-size:18px;line-height:1}@media(max-width:700px){#program-pdf-download{margin:12px 0 0}}
+      #program-book-modal{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:4px;background:rgba(15,14,12,.88);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}#program-book-modal.open{opacity:1;visibility:visible;pointer-events:auto}
+      .pb-shell{position:relative;width:100%;max-width:1920px;height:99vh;display:flex;flex-direction:column;align-items:center;justify-content:center}.pb-close{position:absolute;right:4px;top:4px;z-index:50;width:44px;height:44px;border:1px solid rgba(255,255,255,.85);border-radius:50%;background:rgba(20,20,20,.65);color:#fff;font-size:26px;line-height:1;cursor:pointer}.pb-stage{width:100%;height:calc(100vh - 105px);display:flex;align-items:center;justify-content:center;perspective:2800px;perspective-origin:center}.pb-book{position:relative;width:min(99vw,1900px);aspect-ratio:2.826 / 1;max-height:90vh;transform-style:preserve-3d;transform-origin:center;filter:drop-shadow(0 30px 38px rgba(0,0,0,.48));isolation:isolate}.pb-page{position:absolute;top:0;width:50%;height:100%;overflow:hidden;background:#f7f0df;backface-visibility:hidden;transform-style:preserve-3d;will-change:transform;box-shadow:inset 0 0 28px rgba(60,45,25,.10)}.pb-page.left{left:0;transform-origin:right center;border-radius:10px 2px 2px 10px}.pb-page.right{right:0;transform-origin:left center;border-radius:2px 10px 10px 2px}.pb-page.cover{right:0;left:auto;transform-origin:left center;border-radius:2px 10px 10px 2px}.pb-page.back{left:0;right:auto;transform-origin:right center;border-radius:10px 2px 2px 10px}.pb-page img{width:100%;height:100%;display:block;object-fit:contain}.pb-page.cover img,.pb-page.back img{object-fit:cover}
+      .pb-page.turn{z-index:20;transition:transform .88s cubic-bezier(.22,.61,.36,1)}.pb-page.turn-next{transform:rotateY(-180deg)}.pb-page.turn-prev{transform:rotateY(180deg)}.pb-page.turn::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .88s ease;background:linear-gradient(90deg,rgba(15,10,5,.38),rgba(255,255,255,.20) 38%,transparent 68%,rgba(15,10,5,.16))}.pb-page.turning::after{opacity:.72}.pb-under-page{z-index:5}.pb-under-page.left{left:0}.pb-under-page.right{right:0}.pb-under-page.back{left:0;right:auto}.pb-under-page::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(20,14,7,.04),transparent 45%,rgba(20,14,7,.12))}
+      .pb-nav{display:flex;align-items:center;gap:12px;margin-top:6px;color:#fff}.pb-btn{width:52px;height:42px;border:1px solid rgba(255,255,255,.85);border-radius:22px;background:rgba(255,255,255,.07);color:#fff;cursor:pointer;font-size:18px;transition:background .15s,transform .15s}.pb-btn:hover:not(:disabled){background:rgba(255,255,255,.16);transform:translateY(-1px)}.pb-btn:disabled{opacity:.28;cursor:default}.pb-count{min-width:130px;text-align:center;font:600 12px/1 sans-serif;letter-spacing:.1em}.pb-hint{margin-top:4px;color:rgba(255,255,255,.72);font:500 10px/1.4 sans-serif;text-transform:uppercase;letter-spacing:.08em}
+      @media(max-width:700px){#program-book-modal{padding:6px}.pb-shell{width:100%;height:100%}.pb-stage{width:100%;height:calc(100vh - 150px);perspective:1400px}.pb-book{width:min(96vw,calc((100vh - 165px) * 11.69 / 8.27));aspect-ratio:11.69 / 8.27;max-height:none}.pb-page{width:100%!important;left:0!important;right:auto!important;border-radius:9px!important;transform-origin:center!important}.pb-page.turn{transition-duration:.66s}.pb-nav{margin-top:10px}.pb-hint{font-size:9px;max-width:300px;text-align:center}}
       @media(prefers-reduced-motion:reduce){.pb-page.turn{transition-duration:.01ms!important}}
-    `;
-    document.head.appendChild(style);
+    `; document.head.appendChild(style);
 
-    const modal=document.createElement('div');
-    modal.id='program-book-modal';
-    modal.innerHTML=`<div class="pb-shell" role="dialog" aria-modal="true" aria-label="Program Z:LOMNICE"><button class="pb-close" type="button" aria-label="Zavřít">×</button><div class="pb-stage"><div class="pb-book"></div></div><div class="pb-nav"><button class="pb-btn" data-prev type="button" aria-label="Předchozí strana">←</button><span class="pb-count" data-count></span><button class="pb-btn" data-next type="button" aria-label="Další strana">→</button></div><div class="pb-hint">Listujte šipkami, tlačítky nebo přejetím prstem</div></div>`;
-    document.body.appendChild(modal);
-
-    const book=modal.querySelector('.pb-book'),prev=modal.querySelector('[data-prev]'),next=modal.querySelector('[data-next]'),count=modal.querySelector('[data-count]'),close=modal.querySelector('.pb-close');
-    let state=0,busy=false,startX=null;
-    const isMobile=()=>window.matchMedia('(max-width:700px)').matches;
-    const makePage=(p,cls)=>`<div class="pb-page ${cls}"><img src="${p.src}" alt="${p.alt}"></div>`;
+    const modal=document.createElement('div'); modal.id='program-book-modal'; modal.innerHTML=`<div class="pb-shell" role="dialog" aria-modal="true" aria-label="Program Z:LOMNICE"><button class="pb-close" type="button" aria-label="Zavřít">×</button><div class="pb-stage"><div class="pb-book"></div></div><div class="pb-nav"><button class="pb-btn" data-prev type="button" aria-label="Předchozí strana">←</button><span class="pb-count" data-count></span><button class="pb-btn" data-next type="button" aria-label="Další strana">→</button></div><div class="pb-hint">Listujte šipkami, tlačítky nebo přejetím prstem</div></div>`; document.body.appendChild(modal);
+    const book=modal.querySelector('.pb-book'),prev=modal.querySelector('[data-prev]'),next=modal.querySelector('[data-next]'),count=modal.querySelector('[data-count]'),close=modal.querySelector('.pb-close'); let state=0,busy=false,startX=null; const isMobile=()=>window.matchMedia('(max-width:700px)').matches; const makePage=(p,cls)=>`<div class="pb-page ${cls}"><img src="${p.src}" alt="${p.alt}"></div>`;
 
     function render(){
-      if(isMobile()){
-        book.innerHTML=makePage(pages[state],'back');
-        count.textContent=`${state+1} / 26`;
-        prev.disabled=state===0;
-        next.disabled=state===25;
-        return;
-      }
-      if(state===0){
-        book.innerHTML=makePage(pages[0],'cover');
-        count.textContent='PŘEDNÍ PŘEBAL · 1';
-        prev.disabled=true;
-        next.disabled=false;
-        return;
-      }
-      if(state===25){
-        book.innerHTML=makePage(pages[25],'back');
-        count.textContent='ZADNÍ PŘEBAL · 26';
-        prev.disabled=false;
-        next.disabled=true;
-        return;
-      }
-      book.innerHTML=makePage(pages[state],'left')+makePage(pages[state+1],'right');
-      count.textContent=`${state+1}–${state+2} / 26`;
-      prev.disabled=false;
-      next.disabled=false;
+      if(isMobile()){book.innerHTML=makePage(pages[state],'back');count.textContent=`${state+1} / 26`;prev.disabled=state===0;next.disabled=state===25;return}
+      if(state===0){book.innerHTML=makePage(pages[0],'cover');count.textContent='PŘEDNÍ PŘEBAL · 1';prev.disabled=true;next.disabled=false;return}
+      if(state===25){book.innerHTML=makePage(pages[25],'back');count.textContent='ZADNÍ PŘEBAL · 26';prev.disabled=false;next.disabled=true;return}
+      book.innerHTML=makePage(pages[state],'left')+makePage(pages[state+1],'right');count.textContent=`${state+1}–${state+2} / 26`;prev.disabled=false;next.disabled=false
     }
-
-    function finish(nextState,turning,nodes=[]){
-      let done=false;
-      const complete=()=>{
-        if(done)return;
-        done=true;
-        turning.removeEventListener('transitionend',complete);
-        nodes.forEach(n=>n.remove());
-        state=nextState;
-        busy=false;
-        render();
-      };
-      turning.addEventListener('transitionend',complete,{once:true});
-      window.setTimeout(complete,isMobile()?760:980);
-    }
-
-    function desktopTurn(dir,target){
-      const oldLeft=book.querySelector('.pb-page.left'),oldRight=book.querySelector('.pb-page.right');
-      if(!oldLeft||!oldRight){busy=false;return}
-      const nodes=[];
-      if(target===25){
-        const wrap=document.createElement('div');
-        wrap.innerHTML=makePage(pages[25],'pb-under-page back');
-        const node=wrap.firstElementChild;
-        node.style.position='absolute';node.style.top='0';node.style.left='0';node.style.width='50%';node.style.height='100%';node.style.overflow='hidden';node.style.background='#f7f0df';
-        book.appendChild(node);nodes.push(node);
-      }else{
-        const wrap=document.createElement('div');
-        wrap.innerHTML=makePage(pages[target],'pb-under-page left')+makePage(pages[target+1],'pb-under-page right');
-        [...wrap.children].forEach(node=>{
-          node.style.position='absolute';node.style.top='0';node.style.width='50%';node.style.height='100%';node.style.overflow='hidden';node.style.background='#f7f0df';
-          book.appendChild(node);nodes.push(node);
-        });
-      }
-      const turning=dir>0?oldRight:oldLeft;
-      turning.classList.add('turn',dir>0?'turn-next':'turn-prev','turning');
-      finish(target,turning,nodes);
-    }
-
-    function mobileTurn(dir,target){
-      const current=book.querySelector('.pb-page');
-      if(!current){busy=false;return}
-      current.classList.add('turn',dir>0?'turn-next':'turn-prev','turning');
-      finish(target,current);
-    }
-
-    function turn(dir){
-      if(busy)return;
-      let target;
-      if(isMobile()) target=state+dir;
-      else if(state===0&&dir>0) target=1;
-      else if(state===1&&dir<0) target=0;
-      else if(state===23&&dir>0) target=25;
-      else if(state===25&&dir<0) target=23;
-      else target=state+2*dir;
-      if(target<0||target>=pages.length)return;
-      busy=true;
-      if(isMobile()) mobileTurn(dir,target);
-      else if(state===0||state===25){
-        const current=book.querySelector('.pb-page');
-        if(!current){busy=false;return}
-        current.classList.add('turn',dir>0?'turn-next':'turn-prev','turning');
-        finish(target,current);
-      }else desktopTurn(dir,target);
-    }
-
-    function openBook(e){e.preventDefault();state=0;busy=false;render();modal.classList.add('open');document.body.style.overflow='hidden'}
-    function closeBook(){modal.classList.remove('open');document.body.style.overflow='';busy=false}
-
-    trigger.addEventListener('click',openBook);
-    close.addEventListener('click',closeBook);
-    modal.addEventListener('click',e=>{if(e.target===modal)closeBook()});
-    prev.addEventListener('click',()=>turn(-1));
-    next.addEventListener('click',()=>turn(1));
-    modal.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});
-    modal.addEventListener('touchend',e=>{if(startX===null)return;const dx=e.changedTouches[0].clientX-startX;startX=null;if(Math.abs(dx)>45)turn(dx<0?1:-1)},{passive:true});
-    document.addEventListener('keydown',e=>{if(!modal.classList.contains('open'))return;if(e.key==='Escape')closeBook();if(e.key==='ArrowRight')turn(1);if(e.key==='ArrowLeft')turn(-1)});
-    window.addEventListener('resize',()=>{if(modal.classList.contains('open')&&!busy)render()});
-    render();
+    function finish(nextState,turning,nodes=[]){let done=false;const complete=()=>{if(done)return;done=true;turning.removeEventListener('transitionend',complete);nodes.forEach(n=>n.remove());state=nextState;busy=false;render()};turning.addEventListener('transitionend',complete,{once:true});window.setTimeout(complete,isMobile()?760:980)}
+    function desktopTurn(dir,target){const oldLeft=book.querySelector('.pb-page.left'),oldRight=book.querySelector('.pb-page.right');if(!oldLeft||!oldRight){busy=false;return}const nodes=[];if(target===25){const wrap=document.createElement('div');wrap.innerHTML=makePage(pages[25],'pb-under-page back');const node=wrap.firstElementChild;node.style.position='absolute';node.style.top='0';node.style.left='0';node.style.width='50%';node.style.height='100%';node.style.overflow='hidden';node.style.background='#f7f0df';book.appendChild(node);nodes.push(node)}else{const wrap=document.createElement('div');wrap.innerHTML=makePage(pages[target],'pb-under-page left')+makePage(pages[target+1],'pb-under-page right');[...wrap.children].forEach(node=>{node.style.position='absolute';node.style.top='0';node.style.width='50%';node.style.height='100%';node.style.overflow='hidden';node.style.background='#f7f0df';book.appendChild(node);nodes.push(node)})}const turning=dir>0?oldRight:oldLeft;turning.classList.add('turn',dir>0?'turn-next':'turn-prev','turning');finish(target,turning,nodes)}
+    function mobileTurn(dir,target){const current=book.querySelector('.pb-page');if(!current){busy=false;return}current.classList.add('turn',dir>0?'turn-next':'turn-prev','turning');finish(target,current)}
+    function turn(dir){if(busy)return;let target;if(isMobile())target=state+dir;else if(state===0&&dir>0)target=1;else if(state===1&&dir<0)target=0;else if(state===23&&dir>0)target=25;else if(state===25&&dir<0)target=23;else target=state+2*dir;if(target<0||target>=pages.length)return;busy=true;if(isMobile())mobileTurn(dir,target);else if(state===0||state===25){const current=book.querySelector('.pb-page');if(!current){busy=false;return}current.classList.add('turn',dir>0?'turn-next':'turn-prev','turning');finish(target,current)}else desktopTurn(dir,target)}
+    function openBook(e){e.preventDefault();state=0;busy=false;render();modal.classList.add('open');document.body.style.overflow='hidden'}function closeBook(){modal.classList.remove('open');document.body.style.overflow='';busy=false}
+    trigger.addEventListener('click',openBook);close.addEventListener('click',closeBook);modal.addEventListener('click',e=>{if(e.target===modal)closeBook()});prev.addEventListener('click',()=>turn(-1));next.addEventListener('click',()=>turn(1));modal.addEventListener('touchstart',e=>{startX=e.changedTouches[0].clientX},{passive:true});modal.addEventListener('touchend',e=>{if(startX===null)return;const dx=e.changedTouches[0].clientX-startX;startX=null;if(Math.abs(dx)>45)turn(dx<0?1:-1)},{passive:true});document.addEventListener('keydown',e=>{if(!modal.classList.contains('open'))return;if(e.key==='Escape')closeBook();if(e.key==='ArrowRight')turn(1);if(e.key==='ArrowLeft')turn(-1)});window.addEventListener('resize',()=>{if(modal.classList.contains('open')&&!busy)render()});render();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initProgramBook,{once:true});else initProgramBook();
 })();
