@@ -13,5 +13,8 @@ function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'})}document.query
 if(!document.querySelector('#back-to-top-style')){const s=document.createElement('style');s.id='back-to-top-style';s.textContent='.desktop-nav .back-to-top{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-left:2px;border:1px solid #111;border-radius:50%;font-size:20px;line-height:1;letter-spacing:0}.desktop-nav .back-to-top:hover{background:var(--yellow)}';document.head.appendChild(s)}
 if(!document.querySelector('link[data-responsive-css]')){const r=document.createElement('link');r.rel='stylesheet';r.href='responsive.css';r.dataset.responsiveCss='true';document.head.appendChild(r)}
 
+// Keep candidate ages on a single line, even on narrow screens.
+if(!document.querySelector('#person-age-nowrap-style')){const s=document.createElement('style');s.id='person-age-nowrap-style';s.textContent='.person-meta>span:first-child{white-space:nowrap!important;flex:0 0 auto!important}';document.head.appendChild(s)}
+
 // The program book is intentionally loaded separately so it cannot interfere with the main page logic.
 if(!document.querySelector('script[data-program-book]')){const s=document.createElement('script');s.src='program-book.js';s.dataset.programBook='true';document.body.appendChild(s)}
