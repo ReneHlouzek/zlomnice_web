@@ -28,7 +28,7 @@ if(!document.querySelector('script[data-program-book]')){const s=document.create
     window.__zlomniceGA=true;
     window.dataLayer=window.dataLayer||[];
     window.gtag=function(){dataLayer.push(arguments)};
-    gtag('consent','default',{analytics_storage:'granted',ad_storage:'denied',ad_user_data:'granted',ad_personalization:'denied'});
+    gtag('consent','default',{analytics_storage:'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
     gtag('js',new Date());
     gtag('config',GA_ID);
     const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(GA_ID);document.head.appendChild(s);
