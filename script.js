@@ -18,3 +18,34 @@ if(!document.querySelector('#person-age-nowrap-style')){const s=document.createE
 
 // The program book is intentionally loaded separately so it cannot interfere with the main page logic.
 if(!document.querySelector('script[data-program-book]')){const s=document.createElement('script');s.src='program-book.js';s.dataset.programBook='true';document.body.appendChild(s)}
+
+// Google Analytics 4 with an explicit consent choice for EEA visitors.
+(function(){
+  const GA_ID='G-P3HJZ2920H';
+  const CONSENT_KEY='zlomnice_analytics_consent';
+  function loadAnalytics(){
+    if(window.__zlomniceGA)return;
+    window.__zlomniceGA=true;
+    window.dataLayer=window.dataLayer||[];
+    window.gtag=function(){dataLayer.push(arguments)};
+    gtag('consent','default',{analytics_storage:'granted',ad_storage:'denied',ad_user_data:'granted',ad_personalization:'denied'});
+    gtag('js',new Date());
+    gtag('config',GA_ID);
+    const s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(GA_ID);document.head.appendChild(s);
+  }
+  function styleBanner(){
+    if(document.querySelector('#analytics-consent-style'))return;
+    const s=document.createElement('style');s.id='analytics-consent-style';s.textContent='.analytics-consent{position:fixed;left:20px;right:20px;bottom:20px;z-index:9999;display:flex;align-items:center;gap:18px;padding:18px 20px;background:#111;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.28);font:15px/1.45 system-ui,sans-serif}.analytics-consent p{margin:0;flex:1}.analytics-consent-actions{display:flex;gap:10px;flex-shrink:0}.analytics-consent button{border:0;padding:10px 18px;border-radius:4px;font-weight:700;cursor:pointer}.analytics-consent-accept{background:#f5c518;color:#111}.analytics-consent-deny{background:#fff;color:#111}@media(max-width:700px){.analytics-consent{left:10px;right:10px;bottom:10px;display:block}.analytics-consent-actions{margin-top:12px}}';document.head.appendChild(s);
+  }
+  function showBanner(){
+    if(document.querySelector('.analytics-consent'))return;
+    styleBanner();
+    const box=document.createElement('div');box.className='analytics-consent';box.setAttribute('role','dialog');box.setAttribute('aria-label','Souhlas s měřením návštěvnosti');
+    box.innerHTML='<p>Pro měření návštěvnosti používáme Google Analytics. Analytické cookies zapneme pouze s vaším souhlasem.</p><div class="analytics-consent-actions"><button class="analytics-consent-deny">Odmítnout</button><button class="analytics-consent-accept">Souhlasím</button></div>';
+    document.body.appendChild(box);
+    box.querySelector('.analytics-consent-accept').addEventListener('click',()=>{localStorage.setItem(CONSENT_KEY,'granted');loadAnalytics();box.remove()});
+    box.querySelector('.analytics-consent-deny').addEventListener('click',()=>{localStorage.setItem(CONSENT_KEY,'denied');box.remove()});
+  }
+  const consent=localStorage.getItem(CONSENT_KEY);
+  if(consent==='granted')loadAnalytics();else if(consent!=='denied')showBanner();
+})();
