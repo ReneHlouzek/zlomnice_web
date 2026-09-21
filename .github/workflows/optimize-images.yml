@@ -1,6 +1,8 @@
 name: Optimize images
 on:
-  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/optimize-images.yml"
 permissions:
   contents: write
 jobs:
